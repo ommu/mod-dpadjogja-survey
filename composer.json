@@ -1,0 +1,44 @@
+{
+	"name": "dpadjogja/survey",
+	"description": "Survey Module from OMMU for DPAD Yogyakarta",
+	"type": "ommu-module",
+	"keywords": [
+		"module",
+		"survey",
+		"instrumen",
+		"kuesioner",
+		"kepuasan-masyarakat",
+		"ommu",
+		"ommu-platform",
+		"yii2"
+	],
+	"license": "Apache-2.0",
+	"homepage": "https://github.com/ommu/dpadjogja-survey",
+	"support": {
+		"issues": "https://github.com/ommu/dpadjogja-survey/issues",
+		"wiki": "https://github.com/ommu/dpadjogja-survey/wiki",
+		"source": "https://github.com/ommu/dpadjogja-survey"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ommu/dpadjogja-survey.git"
+	},
+	"authors": [
+		{
+			"name": "Putra Sudaryanto",
+			"email": "putra@ommu.co",
+			"homepage": "https://ommu.co",
+			"role": "Creator"
+		}
+	],
+	"require": {
+		"php": "~7.0",
+		"yiisoft/yii2": "~2.0.13"
+
+	},
+	"autoload": {
+		"psr-4": {
+			"dpadjogja\\survey\\": ""
+		}
+	}
+}
