@@ -18,8 +18,9 @@ use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 if(!$small) {
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Respondents'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->education->id;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Survey'), 'url' => ['admin/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Respondent'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = isset($model->user) ? $model->user->displayname : Yii::t('app', 'Number #{id}', ['id'=>$model->id]);
 
 $this->params['menu']['content'] = [
 	['label' => Yii::t('app', 'Update'), 'url' => Url::to(['update', 'id'=>$model->id]), 'icon' => 'pencil', 'htmlOptions' => ['class'=>'btn btn-primary']],

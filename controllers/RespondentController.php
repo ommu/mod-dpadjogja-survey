@@ -160,7 +160,7 @@ class RespondentController extends Controller
 			}
 		}
 
-		$this->view->title = Yii::t('app', 'Update Respondent: {education-id}', ['education-id' => $model->education->id]);
+		$this->view->title = Yii::t('app', 'Update Respondent: {id}', ['id' => isset($model->user) ? $model->user->displayname : Yii::t('app', 'Number #{id}', ['id'=>$model->id])]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_update', [
@@ -177,7 +177,7 @@ class RespondentController extends Controller
 	{
 		$model = $this->findModel($id);
 
-		$this->view->title = Yii::t('app', 'Detail Respondent: {education-id}', ['education-id' => $model->education->id]);
+		$this->view->title = Yii::t('app', 'Detail Respondent: {id}', ['id' => isset($model->user) ? $model->user->displayname : Yii::t('app', 'Number #{id}', ['id'=>$model->id])]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
