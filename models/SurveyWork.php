@@ -157,16 +157,6 @@ class SurveyWork extends \app\components\ActiveRecord
 				return $model->order;
 			},
 		];
-		$this->templateColumns['respondents'] = [
-			'attribute' => 'respondents',
-			'value' => function($model, $key, $index, $column) {
-				$respondents = $model->getRespondents(true);
-				return Html::a($respondents, ['respondent/manage', 'work'=>$model->primaryKey], ['title'=>Yii::t('app', '{count} respondents', ['count'=>$respondents]), 'data-pjax'=>0]);
-			},
-			'filter' => false,
-			'contentOptions' => ['class'=>'center'],
-			'format' => 'raw',
-		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
 			'value' => function($model, $key, $index, $column) {
@@ -203,6 +193,16 @@ class SurveyWork extends \app\components\ActiveRecord
 				return Yii::$app->formatter->asDatetime($model->updated_date, 'medium');
 			},
 			'filter' => $this->filterDatepicker($this, 'updated_date'),
+		];
+		$this->templateColumns['respondents'] = [
+			'attribute' => 'respondents',
+			'value' => function($model, $key, $index, $column) {
+				$respondents = $model->getRespondents(true);
+				return Html::a($respondents, ['respondent/manage', 'work'=>$model->primaryKey], ['title'=>Yii::t('app', '{count} respondents', ['count'=>$respondents]), 'data-pjax'=>0]);
+			},
+			'filter' => false,
+			'contentOptions' => ['class'=>'center'],
+			'format' => 'raw',
 		];
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
@@ -247,7 +247,7 @@ class SurveyWork extends \app\components\ActiveRecord
 		if($publish != null)
 			$model->andWhere(['t.publish' => $publish]);
 
-		$model = $model->orderBy('t.work_name ASC')->all();
+		$model = $model->orderBy('t.order ASC')->all();
 
 		if($array == true)
 			return \yii\helpers\ArrayHelper::map($model, 'id', 'work_name');
