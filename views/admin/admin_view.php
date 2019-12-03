@@ -1,14 +1,14 @@
 <?php
 /**
- * Survey Respondents (survey-respondent)
+ * Surveys (surveys)
  * @var $this app\components\View
- * @var $this dpadjogja\survey\controllers\RespondentController
- * @var $model dpadjogja\survey\models\SurveyRespondent
+ * @var $this dpadjogja\survey\controllers\AdminController
+ * @var $model dpadjogja\survey\models\Surveys
  *
  * @author Putra Sudaryanto <putra@ommu.co>
  * @contact (+62)856-299-4114
  * @copyright Copyright (c) 2019 OMMU (www.ommu.co)
- * @created date 3 December 2019, 10:39 WIB
+ * @created date 4 December 2019, 01:58 WIB
  * @link https://github.com/ommu/dpadjogja-survey
  *
  */
@@ -18,9 +18,8 @@ use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 if(!$small) {
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Survey'), 'url' => ['admin/index']];
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Respondent'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = isset($model->user) ? $model->user->displayname : Yii::t('app', 'Number #{id}', ['id'=>$model->id]);
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Surveys'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = $model->respondent->education->id;
 
 $this->params['menu']['content'] = [
 	['label' => Yii::t('app', 'Update'), 'url' => Url::to(['update', 'id'=>$model->id]), 'icon' => 'pencil', 'htmlOptions' => ['class'=>'btn btn-primary']],
@@ -28,7 +27,7 @@ $this->params['menu']['content'] = [
 ];
 } ?>
 
-<div class="survey-respondent-view">
+<div class="surveys-view">
 
 <?php
 $attributes = [
@@ -38,32 +37,28 @@ $attributes = [
 		'visible' => !$small,
 	],
 	[
-		'attribute' => 'userDisplayname',
-		'value' => isset($model->user) ? $model->user->displayname : '-',
-		'visible' => !$small,
+		'attribute' => 'respondent.gender',
+		'value' => $model->respondent::getGender($model->respondent->gender),
 	],
 	[
-		'attribute' => 'gender',
-		'value' => $model::getGender($model->gender),
-		'visible' => !$small,
-	],
-	[
-		'attribute' => 'educationLevel',
+		'attribute' => 'respondent.educationLevel',
 		'value' => function ($model) {
-			$educationLevel = isset($model->education) ? $model->education->education_level : '-';
-			if($educationLevel != '-')
-				return Html::a($educationLevel, ['setting/education/view', 'id'=>$model->education_id], ['title'=>$educationLevel, 'class'=>'modal-btn']);
-			return $educationLevel;
+			return isset($model->respondent->education) ? $model->respondent->education->education_level : '-';
 		},
-		'format' => 'html',
 	],
 	[
-		'attribute' => 'workName',
+		'attribute' => 'respondent.workName',
 		'value' => function ($model) {
-			$workName = isset($model->work) ? $model->work->work_name : '-';
-			if($workName != '-')
-				return Html::a($workName, ['setting/work/view', 'id'=>$model->work_id], ['title'=>$workName, 'class'=>'modal-btn']);
-			return $workName;
+			return isset($model->respondent->work) ? $model->respondent->work->work_name : '-';
+		},
+	],
+	[
+		'attribute' => 'serviceName',
+		'value' => function ($model) {
+			$serviceName = isset($model->service) ? $model->service->service_name : '-';
+			if($serviceName != '-')
+				return Html::a($serviceName, ['setting/service/view', 'id'=>$model->service_id], ['title'=>$serviceName, 'class'=>'modal-btn']);
+			return $serviceName;
 		},
 		'format' => 'html',
 	],
@@ -88,8 +83,13 @@ $attributes = [
 		'visible' => !$small,
 	],
 	[
+		'attribute' => 'updated_date',
+		'value' => Yii::$app->formatter->asDatetime($model->updated_date, 'medium'),
+		'visible' => !$small,
+	],
+	[
 		'attribute' => '',
-		'value' => Html::a(Yii::t('app', 'Update'), ['update', 'id'=>$model->primaryKey], ['title'=>Yii::t('app', 'Update'), 'class'=>'btn btn-success btn-sm modal-btn']),
+		'value' => Html::a(Yii::t('app', 'Update'), ['update', 'id'=>$model->primaryKey], ['title'=>Yii::t('app', 'Update'), 'class'=>'btn btn-success btn-sm']),
 		'format' => 'html',
 		'visible' => !$small && Yii::$app->request->isAjax ? true : false,
 	],

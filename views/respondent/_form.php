@@ -18,6 +18,8 @@ use yii\helpers\Html;
 use app\components\widgets\ActiveForm;
 use dpadjogja\survey\models\SurveyEducation;
 use dpadjogja\survey\models\SurveyWork;
+use ommu\selectize\Selectize;
+use yii\helpers\ArrayHelper;
 ?>
 
 <div class="survey-respondent-form">
@@ -38,7 +40,17 @@ use dpadjogja\survey\models\SurveyWork;
 
 <?php $gender = $model::getGender();
 echo $form->field($model, 'gender')
-	->dropDownList($gender, ['prompt'=>''])
+	->widget(Selectize::className(), [
+		'options' => [
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('gender'))]),
+		],
+		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('gender'))])], $gender),
+		'pluginOptions' => [
+			'persist' => false,
+			'createOnBlur' => false,
+			'create' => true,
+		],
+	])
 	->label($model->getAttributeLabel('gender')); ?>
 
 <?php echo $form->field($model, 'user_id')

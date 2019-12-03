@@ -1,3 +1,16 @@
+survey_submenu:
+  survey:
+    label: Surveys
+    url:
+      0: 'admin/view'
+      id: $_GET*id
+    select: controller
+  assessment:
+    label: Assessments
+    url:
+      0: 'assessment/manage'
+      survey: $_GET*id
+    select: controller
 setting_submenu:
   update:
     label: Settings
