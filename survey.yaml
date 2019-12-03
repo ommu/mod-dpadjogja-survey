@@ -1,0 +1,17 @@
+setting_submenu:
+  update:
+    label: Settings
+    url: ['setting/admin']
+    select: controller
+  category:
+    label: Categories
+    url: ['setting/category']
+    select: controller
+  education:
+    label: Level of Educations
+    url: ['setting/education']
+    select: controller
+  work:
+    label: Works
+    url: ['setting/work']
+    select: controller
