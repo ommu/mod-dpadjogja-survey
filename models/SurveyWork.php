@@ -213,7 +213,7 @@ class SurveyWork extends \app\components\ActiveRecord
 			},
 			'filter' => $this->filterYesNo(),
 			'contentOptions' => ['class'=>'center'],
-				'format' => 'raw',
+			'format' => 'raw',
 			'visible' => !Yii::$app->request->get('trash') ? true : false,
 		];
 	}
