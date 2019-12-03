@@ -40,6 +40,15 @@ class WorkController extends Controller
 	/**
 	 * {@inheritdoc}
 	 */
+	public function init()
+	{
+		parent::init();
+		$this->subMenu = $this->module->params['setting_submenu'];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function behaviors()
 	{
 		return [
@@ -111,8 +120,8 @@ class WorkController extends Controller
 			if($model->save()) {
 				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey work success created.'));
 				if(!Yii::$app->request->isAjax)
-					return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
-				return $this->redirect(['manage']);
+					return $this->redirect(['manage']);
+				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 
 			} else {
 				if(Yii::$app->request->isAjax)
@@ -147,8 +156,8 @@ class WorkController extends Controller
 			if($model->save()) {
 				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey work success updated.'));
 				if(!Yii::$app->request->isAjax)
-					return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
-				return $this->redirect(['manage']);
+					return $this->redirect(['manage']);
+				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 
 			} else {
 				if(Yii::$app->request->isAjax)

@@ -156,6 +156,7 @@ class SurveyEducation extends \app\components\ActiveRecord
 			'value' => function($model, $key, $index, $column) {
 				return $model->order;
 			},
+			'contentOptions' => ['class'=>'center'],
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',

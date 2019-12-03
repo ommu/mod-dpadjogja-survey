@@ -1,28 +1,30 @@
 <?php
 /**
- * SurveyCategory
+ * SurveyRespondent
  * 
  * @author Putra Sudaryanto <putra@ommu.co>
  * @contact (+62)856-299-4114
  * @copyright Copyright (c) 2019 OMMU (www.ommu.co)
- * @created date 2 December 2019, 23:38 WIB
+ * @created date 3 December 2019, 10:17 WIB
  * @link https://github.com/ommu/dpadjogja-survey
  *
- * This is the model class for table "dpadjogja_survey_category".
+ * This is the model class for table "dpadjogja_survey_respondent".
  *
- * The followings are the available columns in table "dpadjogja_survey_category":
+ * The followings are the available columns in table "dpadjogja_survey_respondent":
  * @property integer $id
- * @property integer $publish
- * @property string $category_name
- * @property string $category_desc
+ * @property integer $user_id
+ * @property integer $education_id
+ * @property integer $work_id
+ * @property string $gender
  * @property string $creation_date
  * @property integer $creation_id
  * @property string $modified_date
  * @property integer $modified_id
- * @property string $updated_date
  *
  * The followings are the available model relations:
- * @property SurveyInstrument[] $instruments
+ * @property SurveyEducation $education
+ * @property SurveyWork $work
+ * @property Users $user
  * @property Users $creation
  * @property Users $modified
  *
@@ -31,16 +33,15 @@
 namespace dpadjogja\survey\models;
 
 use Yii;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use ommu\users\models\Users;
 
-class SurveyCategory extends \app\components\ActiveRecord
+class SurveyRespondent extends \app\components\ActiveRecord
 {
-	use \ommu\traits\UtilityTrait;
+	public $gridForbiddenColumn = ['modified_date', 'modifiedDisplayname'];
 
-	public $gridForbiddenColumn = ['category_desc', 'modified_date', 'modifiedDisplayname', 'updated_date'];
-
+	public $educationLevel;
+	public $workName;
+	public $userDisplayname;
 	public $creationDisplayname;
 	public $modifiedDisplayname;
 
@@ -49,7 +50,7 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public static function tableName()
 	{
-		return 'dpadjogja_survey_category';
+		return 'dpadjogja_survey_respondent';
 	}
 
 	/**
@@ -58,11 +59,12 @@ class SurveyCategory extends \app\components\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['category_name'], 'required'],
-			[['publish', 'creation_id', 'modified_id'], 'integer'],
-			[['category_desc'], 'string'],
-			[['category_desc'], 'safe'],
-			[['category_name'], 'string', 'max' => 64],
+			[['education_id', 'work_id', 'gender'], 'required'],
+			[['user_id', 'education_id', 'work_id', 'creation_id', 'modified_id'], 'integer'],
+			[['gender'], 'string'],
+			[['user_id'], 'safe'],
+			[['education_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyEducation::className(), 'targetAttribute' => ['education_id' => 'id']],
+			[['work_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyWork::className(), 'targetAttribute' => ['work_id' => 'id']],
 		];
 	}
 
@@ -73,15 +75,17 @@ class SurveyCategory extends \app\components\ActiveRecord
 	{
 		return [
 			'id' => Yii::t('app', 'ID'),
-			'publish' => Yii::t('app', 'Publish'),
-			'category_name' => Yii::t('app', 'Category'),
-			'category_desc' => Yii::t('app', 'Description'),
+			'user_id' => Yii::t('app', 'User'),
+			'education_id' => Yii::t('app', 'Education'),
+			'work_id' => Yii::t('app', 'Work'),
+			'gender' => Yii::t('app', 'Gender'),
 			'creation_date' => Yii::t('app', 'Creation Date'),
 			'creation_id' => Yii::t('app', 'Creation'),
 			'modified_date' => Yii::t('app', 'Modified Date'),
 			'modified_id' => Yii::t('app', 'Modified'),
-			'updated_date' => Yii::t('app', 'Updated Date'),
-			'instruments' => Yii::t('app', 'Instruments'),
+			'educationLevel' => Yii::t('app', 'Education'),
+			'workName' => Yii::t('app', 'Work'),
+			'userDisplayname' => Yii::t('app', 'User'),
 			'creationDisplayname' => Yii::t('app', 'Creation'),
 			'modifiedDisplayname' => Yii::t('app', 'Modified'),
 		];
@@ -90,25 +94,25 @@ class SurveyCategory extends \app\components\ActiveRecord
 	/**
 	 * @return \yii\db\ActiveQuery
 	 */
-	public function getInstruments($count=false, $publish=1)
+	public function getEducation()
 	{
-		if($count == false)
-			return $this->hasMany(SurveyInstrument::className(), ['cat_id' => 'id'])
-			->alias('instruments')
-			->andOnCondition([sprintf('%s.publish', 'instruments') => $publish]);
+		return $this->hasOne(SurveyEducation::className(), ['id' => 'education_id']);
+	}
 
-		$model = SurveyInstrument::find()
-			->alias('t')
-			->where(['cat_id' => $this->id]);
-		if($publish == 0)
-			$model->unpublish();
-		elseif($publish == 1)
-			$model->published();
-		elseif($publish == 2)
-			$model->deleted();
-		$instruments = $model->count();
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getWork()
+	{
+		return $this->hasOne(SurveyWork::className(), ['id' => 'work_id']);
+	}
 
-		return $instruments ? $instruments : 0;
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getUser()
+	{
+		return $this->hasOne(Users::className(), ['user_id' => 'user_id']);
 	}
 
 	/**
@@ -129,11 +133,11 @@ class SurveyCategory extends \app\components\ActiveRecord
 
 	/**
 	 * {@inheritdoc}
-	 * @return \dpadjogja\survey\models\query\SurveyCategory the active query used by this AR class.
+	 * @return \dpadjogja\survey\models\query\SurveyRespondent the active query used by this AR class.
 	 */
 	public static function find()
 	{
-		return new \dpadjogja\survey\models\query\SurveyCategory(get_called_class());
+		return new \dpadjogja\survey\models\query\SurveyRespondent(get_called_class());
 	}
 
 	/**
@@ -154,17 +158,38 @@ class SurveyCategory extends \app\components\ActiveRecord
 			'class' => 'yii\grid\SerialColumn',
 			'contentOptions' => ['class'=>'center'],
 		];
-		$this->templateColumns['category_name'] = [
-			'attribute' => 'category_name',
+		$this->templateColumns['userDisplayname'] = [
+			'attribute' => 'userDisplayname',
 			'value' => function($model, $key, $index, $column) {
-				return $model->category_name;
+				return isset($model->user) ? $model->user->displayname : '-';
+				// return $model->userDisplayname;
 			},
+			'visible' => !Yii::$app->request->get('user') ? true : false,
 		];
-		$this->templateColumns['category_desc'] = [
-			'attribute' => 'category_desc',
+		$this->templateColumns['gender'] = [
+			'attribute' => 'gender',
 			'value' => function($model, $key, $index, $column) {
-				return $model->category_desc;
+				return self::getGender($model->gender);
 			},
+			'filter' => self::getGender(),
+		];
+		$this->templateColumns['education_id'] = [
+			'attribute' => 'education_id',
+			'value' => function($model, $key, $index, $column) {
+				return isset($model->education) ? $model->education->education_level : '-';
+				// return $model->educationLevel;
+			},
+			'filter' => SurveyEducation::getEducation(),
+			'visible' => !Yii::$app->request->get('education') ? true : false,
+		];
+		$this->templateColumns['work_id'] = [
+			'attribute' => 'work_id',
+			'value' => function($model, $key, $index, $column) {
+				return isset($model->work) ? $model->work->work_name : '-';
+				// return $model->workName;
+			},
+			'filter' => SurveyWork::getWork(),
+			'visible' => !Yii::$app->request->get('work') ? true : false,
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
@@ -196,34 +221,6 @@ class SurveyCategory extends \app\components\ActiveRecord
 			},
 			'visible' => !Yii::$app->request->get('modified') ? true : false,
 		];
-		$this->templateColumns['updated_date'] = [
-			'attribute' => 'updated_date',
-			'value' => function($model, $key, $index, $column) {
-				return Yii::$app->formatter->asDatetime($model->updated_date, 'medium');
-			},
-			'filter' => $this->filterDatepicker($this, 'updated_date'),
-		];
-		$this->templateColumns['instruments'] = [
-			'attribute' => 'instruments',
-			'value' => function($model, $key, $index, $column) {
-				$instruments = $model->getInstruments(true);
-				return Html::a($instruments, ['setting/instrument/manage', 'category'=>$model->primaryKey, 'publish'=>1], ['title'=>Yii::t('app', '{count} instruments', ['count'=>$instruments]), 'data-pjax'=>0]);
-			},
-			'filter' => false,
-			'contentOptions' => ['class'=>'center'],
-			'format' => 'raw',
-		];
-		$this->templateColumns['publish'] = [
-			'attribute' => 'publish',
-			'value' => function($model, $key, $index, $column) {
-				$url = Url::to(['publish', 'id'=>$model->primaryKey]);
-				return $this->quickAction($url, $model->publish);
-			},
-			'filter' => $this->filterYesNo(),
-			'contentOptions' => ['class'=>'center'],
-				'format' => 'raw',
-			'visible' => !Yii::$app->request->get('trash') ? true : false,
-		];
 	}
 
 	/**
@@ -247,21 +244,19 @@ class SurveyCategory extends \app\components\ActiveRecord
 	}
 
 	/**
-	 * function getCategory
+	 * function getGender
 	 */
-	public static function getCategory($publish=null, $array=true) 
+	public static function getGender($value=null)
 	{
-		$model = self::find()->alias('t')
-			->select(['t.id', 't.category_name']);
-		if($publish != null)
-			$model->andWhere(['t.publish' => $publish]);
+		$items = array(
+			'male' => Yii::t('app', 'Male'),
+			'female' => Yii::t('app', 'Female'),
+		);
 
-		$model = $model->orderBy('t.category_name ASC')->all();
-
-		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'category_name');
-
-		return $model;
+		if($value !== null)
+			return $items[$value];
+		else
+			return $items;
 	}
 
 	/**
@@ -271,6 +266,9 @@ class SurveyCategory extends \app\components\ActiveRecord
 	{
 		parent::afterFind();
 
+		// $this->userDisplayname = isset($this->user) ? $this->user->displayname : '-';
+		// $this->educationLevel = isset($this->education) ? $this->education->id : '-';
+		// $this->workName = isset($this->work) ? $this->work->work_name : '-';
 		// $this->creationDisplayname = isset($this->creation) ? $this->creation->displayname : '-';
 		// $this->modifiedDisplayname = isset($this->modified) ? $this->modified->displayname : '-';
 	}
@@ -281,6 +279,9 @@ class SurveyCategory extends \app\components\ActiveRecord
 	public function beforeValidate()
 	{
 		if(parent::beforeValidate()) {
+			if($this->user_id == null)
+				$this->user_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+
 			if($this->isNewRecord) {
 				if($this->creation_id == null)
 					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
