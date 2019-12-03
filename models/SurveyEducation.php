@@ -39,7 +39,7 @@ class SurveyEducation extends \app\components\ActiveRecord
 {
 	use \ommu\traits\UtilityTrait;
 
-	public $gridForbiddenColumn = ['modified_date', 'modifiedDisplayname', 'updated_date'];
+	public $gridForbiddenColumn = ['creation_date', 'creationDisplayname', 'modified_date', 'modifiedDisplayname', 'updated_date'];
 
 	public $creationDisplayname;
 	public $modifiedDisplayname;

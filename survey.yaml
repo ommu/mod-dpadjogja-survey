@@ -15,3 +15,7 @@ setting_submenu:
     label: Works
     url: ['setting/work']
     select: controller
+  service:
+    label: Services
+    url: ['setting/service']
+    select: controller

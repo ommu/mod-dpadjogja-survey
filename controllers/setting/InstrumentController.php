@@ -1,10 +1,10 @@
 <?php
 /**
- * ServiceController
- * @var $this dpadjogja\survey\controllers\setting\ServiceController
- * @var $model dpadjogja\survey\models\SurveyService
+ * InstrumentController
+ * @var $this dpadjogja\survey\controllers\setting\InstrumentController
+ * @var $model dpadjogja\survey\models\SurveyInstrument
  *
- * ServiceController implements the CRUD actions for SurveyService model.
+ * InstrumentController implements the CRUD actions for SurveyInstrument model.
  * Reference start
  * TOC :
  *	Index
@@ -21,7 +21,7 @@
  * @author Putra Sudaryanto <putra@ommu.co>
  * @contact (+62)856-299-4114
  * @copyright Copyright (c) 2019 OMMU (www.ommu.co)
- * @created date 3 December 2019, 17:02 WIB
+ * @created date 3 December 2019, 17:23 WIB
  * @link https://github.com/ommu/dpadjogja-survey
  *
  */
@@ -32,10 +32,10 @@ use Yii;
 use yii\filters\VerbFilter;
 use app\components\Controller;
 use mdm\admin\components\AccessControl;
-use dpadjogja\survey\models\SurveyService;
-use dpadjogja\survey\models\search\SurveyService as SurveyServiceSearch;
+use dpadjogja\survey\models\SurveyInstrument;
+use dpadjogja\survey\models\search\SurveyInstrument as SurveyInstrumentSearch;
 
-class ServiceController extends Controller
+class InstrumentController extends Controller
 {
 	/**
 	 * {@inheritdoc}
@@ -43,7 +43,8 @@ class ServiceController extends Controller
 	public function init()
 	{
 		parent::init();
-		$this->subMenu = $this->module->params['setting_submenu'];
+		if(Yii::$app->request->get('id') || Yii::$app->request->get('category'))
+			$this->subMenu = $this->module->params['setting_submenu'];
 	}
 
 	/**
@@ -74,12 +75,12 @@ class ServiceController extends Controller
 	}
 
 	/**
-	 * Lists all SurveyService models.
+	 * Lists all SurveyInstrument models.
 	 * @return mixed
 	 */
 	public function actionManage()
 	{
-		$searchModel = new SurveyServiceSearch();
+		$searchModel = new SurveyInstrumentSearch();
 		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
 		$gridColumn = Yii::$app->request->get('GridColumn', null);
@@ -92,24 +93,35 @@ class ServiceController extends Controller
 		}
 		$columns = $searchModel->getGridColumn($cols);
 
-		$this->view->title = Yii::t('app', 'Services');
+		if(($category = Yii::$app->request->get('category')) != null)
+			$category = \dpadjogja\survey\models\SurveyCategory::findOne($category);
+
+		$this->view->title = Yii::t('app', 'Instruments');
+		if($category)
+			$this->view->title = Yii::t('app', 'Instruments: Category {category-name}', ['category-name'=>$category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->render('admin_manage', [
 			'searchModel' => $searchModel,
 			'dataProvider' => $dataProvider,
 			'columns' => $columns,
+			'category' => $category,
 		]);
 	}
 
 	/**
-	 * Creates a new SurveyService model.
+	 * Creates a new SurveyInstrument model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return mixed
 	 */
 	public function actionCreate()
 	{
-		$model = new SurveyService();
+		if(($category = Yii::$app->request->get('category')) == null)
+			throw new \yii\web\NotAcceptableHttpException(Yii::t('app', 'The requested page does not exist.'));
+
+		$model = new SurveyInstrument();
+		if($category)
+			$model->cat_id = $category;
 
 		if(Yii::$app->request->isPost) {
 			$model->load(Yii::$app->request->post());
@@ -118,10 +130,11 @@ class ServiceController extends Controller
 			// $model->order = $postData['order'] ? $postData['order'] : 0;
 
 			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey service success created.'));
-				if(!Yii::$app->request->isAjax)
-					return $this->redirect(['manage']);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success created.'));
+				if($category)
+					return $this->redirect(['manage', 'category'=>$model->cat_id]);
+				return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
+				//return $this->redirect(['view', 'id'=>$model->id]);
 
 			} else {
 				if(Yii::$app->request->isAjax)
@@ -129,16 +142,18 @@ class ServiceController extends Controller
 			}
 		}
 
-		$this->view->title = Yii::t('app', 'Create Service');
+		$this->view->title = Yii::t('app', 'Create Instrument');
+		if($category)
+			$this->view->title = Yii::t('app', 'Create Instrument: {cat-id}', ['cat-id'=>$model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
-		return $this->oRender('admin_create', [
+		return $this->render('admin_create', [
 			'model' => $model,
 		]);
 	}
 
 	/**
-	 * Updates an existing SurveyService model.
+	 * Updates an existing SurveyInstrument model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id
 	 * @return mixed
@@ -154,10 +169,10 @@ class ServiceController extends Controller
 			// $model->order = $postData['order'] ? $postData['order'] : 0;
 
 			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey service success updated.'));
+				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success updated.'));
 				if(!Yii::$app->request->isAjax)
-					return $this->redirect(['manage']);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+					return $this->redirect(['update', 'id'=>$model->id]);
+				return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
 
 			} else {
 				if(Yii::$app->request->isAjax)
@@ -165,16 +180,16 @@ class ServiceController extends Controller
 			}
 		}
 
-		$this->view->title = Yii::t('app', 'Update Service: {service-name}', ['service-name' => $model->service_name]);
+		$this->view->title = Yii::t('app', 'Update Instrument: {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
-		return $this->oRender('admin_update', [
+		return $this->render('admin_update', [
 			'model' => $model,
 		]);
 	}
 
 	/**
-	 * Displays a single SurveyService model.
+	 * Displays a single SurveyInstrument model.
 	 * @param integer $id
 	 * @return mixed
 	 */
@@ -182,7 +197,7 @@ class ServiceController extends Controller
 	{
 		$model = $this->findModel($id);
 
-		$this->view->title = Yii::t('app', 'Detail Service: {service-name}', ['service-name' => $model->service_name]);
+		$this->view->title = Yii::t('app', 'Detail Instrument: {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
@@ -191,7 +206,7 @@ class ServiceController extends Controller
 	}
 
 	/**
-	 * Deletes an existing SurveyService model.
+	 * Deletes an existing SurveyInstrument model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id
 	 * @return mixed
@@ -202,13 +217,13 @@ class ServiceController extends Controller
 		$model->publish = 2;
 
 		if($model->save(false, ['publish','modified_id'])) {
-			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey service success deleted.'));
-			return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success deleted.'));
+			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
 		}
 	}
 
 	/**
-	 * actionPublish an existing SurveyService model.
+	 * actionPublish an existing SurveyInstrument model.
 	 * If publish is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id
 	 * @return mixed
@@ -220,21 +235,21 @@ class ServiceController extends Controller
 		$model->publish = $replace;
 
 		if($model->save(false, ['publish','modified_id'])) {
-			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey service success updated.'));
-			return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success updated.'));
+			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
 		}
 	}
 
 	/**
-	 * Finds the SurveyService model based on its primary key value.
+	 * Finds the SurveyInstrument model based on its primary key value.
 	 * If the model is not found, a 404 HTTP exception will be thrown.
 	 * @param integer $id
-	 * @return SurveyService the loaded model
+	 * @return SurveyInstrument the loaded model
 	 * @throws NotFoundHttpException if the model cannot be found
 	 */
 	protected function findModel($id)
 	{
-		if(($model = SurveyService::findOne($id)) !== null)
+		if(($model = SurveyInstrument::findOne($id)) !== null)
 			return $model;
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));

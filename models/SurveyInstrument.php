@@ -1,20 +1,22 @@
 <?php
 /**
- * SurveyCategory
+ * SurveyInstrument
  * 
  * @author Putra Sudaryanto <putra@ommu.co>
  * @contact (+62)856-299-4114
  * @copyright Copyright (c) 2019 OMMU (www.ommu.co)
- * @created date 2 December 2019, 23:38 WIB
+ * @created date 3 December 2019, 06:17 WIB
  * @link https://github.com/ommu/dpadjogja-survey
  *
- * This is the model class for table "dpadjogja_survey_category".
+ * This is the model class for table "dpadjogja_survey_instrument".
  *
- * The followings are the available columns in table "dpadjogja_survey_category":
+ * The followings are the available columns in table "dpadjogja_survey_instrument":
  * @property integer $id
  * @property integer $publish
- * @property string $category_name
- * @property string $category_desc
+ * @property integer $cat_id
+ * @property string $question
+ * @property string $answer
+ * @property integer $order
  * @property string $creation_date
  * @property integer $creation_id
  * @property string $modified_date
@@ -22,7 +24,8 @@
  * @property string $updated_date
  *
  * The followings are the available model relations:
- * @property SurveyInstrument[] $instruments
+ * @property SurveyAssessment[] $assessments
+ * @property SurveyCategory $category
  * @property Users $creation
  * @property Users $modified
  *
@@ -33,14 +36,16 @@ namespace dpadjogja\survey\models;
 use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Json;
 use ommu\users\models\Users;
 
-class SurveyCategory extends \app\components\ActiveRecord
+class SurveyInstrument extends \app\components\ActiveRecord
 {
 	use \ommu\traits\UtilityTrait;
 
-	public $gridForbiddenColumn = ['category_desc', 'creation_date', 'creationDisplayname', 'modified_date', 'modifiedDisplayname', 'updated_date'];
+	public $gridForbiddenColumn = ['creation_date', 'creationDisplayname', 'modified_date', 'modifiedDisplayname', 'updated_date'];
 
+	public $categoryName;
 	public $creationDisplayname;
 	public $modifiedDisplayname;
 
@@ -49,7 +54,7 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public static function tableName()
 	{
-		return 'dpadjogja_survey_category';
+		return 'dpadjogja_survey_instrument';
 	}
 
 	/**
@@ -58,11 +63,12 @@ class SurveyCategory extends \app\components\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['category_name'], 'required'],
-			[['publish', 'creation_id', 'modified_id'], 'integer'],
-			[['category_desc'], 'string'],
-			[['category_desc'], 'safe'],
-			[['category_name'], 'string', 'max' => 64],
+			[['cat_id', 'question', 'answer'], 'required'],
+			[['publish', 'cat_id', 'order', 'creation_id', 'modified_id'], 'integer'],
+			[['question'], 'string'],
+			[['order'], 'safe'],
+			//[['answer'], 'json'],
+			[['cat_id'], 'exist', 'skipOnError' => true, 'targetClass' => SurveyCategory::className(), 'targetAttribute' => ['cat_id' => 'id']],
 		];
 	}
 
@@ -74,14 +80,16 @@ class SurveyCategory extends \app\components\ActiveRecord
 		return [
 			'id' => Yii::t('app', 'ID'),
 			'publish' => Yii::t('app', 'Publish'),
-			'category_name' => Yii::t('app', 'Category'),
-			'category_desc' => Yii::t('app', 'Description'),
+			'cat_id' => Yii::t('app', 'Category'),
+			'question' => Yii::t('app', 'Question'),
+			'answer' => Yii::t('app', 'Answer'),
+			'order' => Yii::t('app', 'Order'),
 			'creation_date' => Yii::t('app', 'Creation Date'),
 			'creation_id' => Yii::t('app', 'Creation'),
 			'modified_date' => Yii::t('app', 'Modified Date'),
 			'modified_id' => Yii::t('app', 'Modified'),
 			'updated_date' => Yii::t('app', 'Updated Date'),
-			'instruments' => Yii::t('app', 'Instruments'),
+			'categoryName' => Yii::t('app', 'Category'),
 			'creationDisplayname' => Yii::t('app', 'Creation'),
 			'modifiedDisplayname' => Yii::t('app', 'Modified'),
 		];
@@ -90,25 +98,17 @@ class SurveyCategory extends \app\components\ActiveRecord
 	/**
 	 * @return \yii\db\ActiveQuery
 	 */
-	public function getInstruments($count=false, $publish=1)
+	public function getAssessments()
 	{
-		if($count == false)
-			return $this->hasMany(SurveyInstrument::className(), ['cat_id' => 'id'])
-			->alias('instruments')
-			->andOnCondition([sprintf('%s.publish', 'instruments') => $publish]);
+		return $this->hasMany(SurveyAssessment::className(), ['instrument_id' => 'id']);
+	}
 
-		$model = SurveyInstrument::find()
-			->alias('t')
-			->where(['cat_id' => $this->id]);
-		if($publish == 0)
-			$model->unpublish();
-		elseif($publish == 1)
-			$model->published();
-		elseif($publish == 2)
-			$model->deleted();
-		$instruments = $model->count();
-
-		return $instruments ? $instruments : 0;
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getCategory()
+	{
+		return $this->hasOne(SurveyCategory::className(), ['id' => 'cat_id']);
 	}
 
 	/**
@@ -129,11 +129,11 @@ class SurveyCategory extends \app\components\ActiveRecord
 
 	/**
 	 * {@inheritdoc}
-	 * @return \dpadjogja\survey\models\query\SurveyCategory the active query used by this AR class.
+	 * @return \dpadjogja\survey\models\query\SurveyInstrument the active query used by this AR class.
 	 */
 	public static function find()
 	{
-		return new \dpadjogja\survey\models\query\SurveyCategory(get_called_class());
+		return new \dpadjogja\survey\models\query\SurveyInstrument(get_called_class());
 	}
 
 	/**
@@ -154,17 +154,35 @@ class SurveyCategory extends \app\components\ActiveRecord
 			'class' => 'yii\grid\SerialColumn',
 			'contentOptions' => ['class'=>'center'],
 		];
-		$this->templateColumns['category_name'] = [
-			'attribute' => 'category_name',
+		$this->templateColumns['cat_id'] = [
+			'attribute' => 'cat_id',
 			'value' => function($model, $key, $index, $column) {
-				return $model->category_name;
+				return isset($model->category) ? $model->category->category_name : '-';
+				// return $model->categoryName;
 			},
+			'filter' => SurveyCategory::getCategory(),
+			'visible' => !Yii::$app->request->get('category') ? true : false,
 		];
-		$this->templateColumns['category_desc'] = [
-			'attribute' => 'category_desc',
+		$this->templateColumns['question'] = [
+			'attribute' => 'question',
 			'value' => function($model, $key, $index, $column) {
-				return $model->category_desc;
+				return $model->question;
 			},
+			'format' => 'html',
+		];
+		$this->templateColumns['answer'] = [
+			'attribute' => 'answer',
+			'value' => function($model, $key, $index, $column) {
+				return self::parseAnswer($model->answer);
+			},
+			'format' => 'html',
+		];
+		$this->templateColumns['order'] = [
+			'attribute' => 'order',
+			'value' => function($model, $key, $index, $column) {
+				return $model->order;
+			},
+			'contentOptions' => ['class'=>'center'],
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
@@ -203,16 +221,6 @@ class SurveyCategory extends \app\components\ActiveRecord
 			},
 			'filter' => $this->filterDatepicker($this, 'updated_date'),
 		];
-		$this->templateColumns['instruments'] = [
-			'attribute' => 'instruments',
-			'value' => function($model, $key, $index, $column) {
-				$instruments = $model->getInstruments(true);
-				return Html::a($instruments, ['setting/instrument/manage', 'category'=>$model->primaryKey, 'publish'=>1], ['title'=>Yii::t('app', '{count} instruments', ['count'=>$instruments]), 'data-pjax'=>0]);
-			},
-			'filter' => false,
-			'contentOptions' => ['class'=>'center'],
-			'format' => 'raw',
-		];
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
 			'value' => function($model, $key, $index, $column) {
@@ -247,21 +255,74 @@ class SurveyCategory extends \app\components\ActiveRecord
 	}
 
 	/**
-	 * function getCategory
+	 * function getInstrument
 	 */
-	public static function getCategory($publish=null, $array=true) 
+	public static function getInstrument($publish=null, $array=true) 
 	{
 		$model = self::find()->alias('t')
-			->select(['t.id', 't.category_name']);
+			->select(['t.id', 't.cat_id']);
 		if($publish != null)
 			$model->andWhere(['t.publish' => $publish]);
 
-		$model = $model->orderBy('t.category_name ASC')->all();
+		$model = $model->orderBy('t.cat_id ASC')->all();
 
 		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'category_name');
+			return \yii\helpers\ArrayHelper::map($model, 'id', 'cat_id');
 
 		return $model;
+	}
+
+	/**
+	 * function getChoice
+	 */
+	public static function getChoices()
+	{
+		$items = array(
+			'a' => 'A',
+			'b' => 'B',
+			'c' => 'C',
+			'd' => 'D',
+		);
+
+		return $items;
+	}
+
+	/**
+	 * function getAnswerStatus
+	 */
+	public function getAnswerStatus()
+	{
+		$answer = $this->answer;
+		$return = true;
+
+		if(!is_array($answer))
+			return false;
+
+		foreach ($answer as $key => $item) {
+			if(!$item['key'] || !$item['val'])
+				$return = false;
+		}
+
+		return $return;
+	}
+
+	/**
+	 * function parseAnswer
+	 */
+	public static function parseAnswer($answer, $sep='li')
+	{
+		if(!is_array($answer) || (is_array($answer) && empty($answer)))
+			return '-';
+
+		// $answer = ArrayHelper::map($answer, 'key', 'val');
+
+		if($sep == 'li') {
+			return Html::ul($answer, ['item' => function($item, $index) {
+				return Html::tag('li', $item['key'].'. '.$item['val']);
+			}, 'class'=>'list-unstyled']);
+		}
+
+		return implode($sep, $answer);
 	}
 
 	/**
@@ -271,6 +332,8 @@ class SurveyCategory extends \app\components\ActiveRecord
 	{
 		parent::afterFind();
 
+		$this->answer = Json::decode($this->answer);
+		// $this->categoryName = isset($this->category) ? $this->category->category_name : '-';
 		// $this->creationDisplayname = isset($this->creation) ? $this->creation->displayname : '-';
 		// $this->modifiedDisplayname = isset($this->modified) ? $this->modified->displayname : '-';
 	}
@@ -288,6 +351,20 @@ class SurveyCategory extends \app\components\ActiveRecord
 				if($this->modified_id == null)
 					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
 			}
+
+			if($this->getAnswerStatus() == false)
+				$this->addError('answer', Yii::t('app', '{attribute} cannot be blank.', ['attribute'=>$this->getAttributeLabel('answer')]));
+		}
+		return true;
+	}
+
+	/**
+	 * before save attributes
+	 */
+	public function beforeSave($insert)
+	{
+		if(parent::beforeSave($insert)) {
+			$this->answer = Json::encode($this->answer);
 		}
 		return true;
 	}
