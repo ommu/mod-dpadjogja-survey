@@ -36,9 +36,20 @@ use dpadjogja\survey\models\search\Surveys as SurveysSearch;
 use dpadjogja\survey\models\SurveyRespondent;
 use yii\helpers\ArrayHelper;
 use app\components\widgets\ActiveForm;
+use dpadjogja\survey\models\SurveyInstrument;
 
 class AdminController extends Controller
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function init()
+	{
+		parent::init();
+		if(Yii::$app->request->get('id'))
+			$this->subMenu = $this->module->params['survey_submenu'];
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -111,6 +122,13 @@ class AdminController extends Controller
 		$model = new Surveys();
 		$respondent = new SurveyRespondent();
 
+		$assessments = SurveyInstrument::find()->alias('t')
+			->select(['t.id', 't.question', 't.answer'])
+			->where(['t.publish' => 1])
+			->andWhere(['t.cat_id' => 2])
+			->orderBy('t.order ASC')
+			->all();
+
 		if(Yii::$app->request->isPost) {
 			$model->load(Yii::$app->request->post());
 			$respondent->load(Yii::$app->request->post());
@@ -141,6 +159,7 @@ class AdminController extends Controller
 		return $this->render('admin_create', [
 			'model' => $model,
 			'respondent' => $respondent,
+			'assessments' => $assessments,
 		]);
 	}
 
@@ -184,6 +203,7 @@ class AdminController extends Controller
 		return $this->render('admin_update', [
 			'model' => $model,
 			'respondent' => $respondent,
+			'assessments' => $assessments,
 		]);
 	}
 

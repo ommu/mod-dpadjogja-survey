@@ -307,6 +307,21 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	}
 
 	/**
+	 * function getAnswerStatus
+	 */
+	public function getAnswerForForm()
+	{
+		$answer = $this->answer;
+		$items = [];
+
+		foreach ($answer as $key => $item) {
+			$items[$key] = $item['val'];
+		}
+
+		return $items;
+	}
+
+	/**
 	 * function parseAnswer
 	 */
 	public static function parseAnswer($answer, $sep='li')
