@@ -144,7 +144,7 @@ class InstrumentController extends Controller
 
 		$this->view->title = Yii::t('app', 'Create Instrument');
 		if($category)
-			$this->view->title = Yii::t('app', 'Create Instrument: {cat-id}', ['cat-id'=>$model->category->category_name]);
+			$this->view->title = Yii::t('app', 'Create Instrument: Category {cat-id}', ['cat-id'=>$model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->render('admin_create', [
@@ -180,7 +180,7 @@ class InstrumentController extends Controller
 			}
 		}
 
-		$this->view->title = Yii::t('app', 'Update Instrument: {cat-id}', ['cat-id' => $model->category->category_name]);
+		$this->view->title = Yii::t('app', 'Update Instrument: Category {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->render('admin_update', [
@@ -197,7 +197,7 @@ class InstrumentController extends Controller
 	{
 		$model = $this->findModel($id);
 
-		$this->view->title = Yii::t('app', 'Detail Instrument: {cat-id}', ['cat-id' => $model->category->category_name]);
+		$this->view->title = Yii::t('app', 'Detail Instrument: Category {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [

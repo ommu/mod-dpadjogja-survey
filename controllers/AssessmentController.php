@@ -133,6 +133,8 @@ class AssessmentController extends Controller
 	 */
 	public function actionDelete($id)
 	{
+		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+
 		$model = $this->findModel($id);
 		$model->delete();
 

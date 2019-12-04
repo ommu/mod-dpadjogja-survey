@@ -20,10 +20,6 @@ use yii\widgets\DetailView;
 if(!$small) {
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Assessments'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $model->survey->respondent->education->id;
-
-$this->params['menu']['content'] = [
-	['label' => Yii::t('app', 'Delete'), 'url' => Url::to(['delete', 'id'=>$model->id]), 'htmlOptions' => ['data-confirm'=>Yii::t('app', 'Are you sure you want to delete this item?'), 'data-method'=>'post', 'class'=>'btn btn-danger'], 'icon' => 'trash'],
-];
 } ?>
 
 <div class="survey-assessment-view">
@@ -74,12 +70,6 @@ $attributes = [
 		'attribute' => 'modifiedDisplayname',
 		'value' => isset($model->modified) ? $model->modified->displayname : '-',
 		'visible' => !$small,
-	],
-	[
-		'attribute' => '',
-		'value' => Html::a(Yii::t('app', 'Update'), ['update', 'id'=>$model->primaryKey], ['title'=>Yii::t('app', 'Update'), 'class'=>'btn btn-success btn-sm']),
-		'format' => 'html',
-		'visible' => !$small && Yii::$app->request->isAjax ? true : false,
 	],
 ];
 
