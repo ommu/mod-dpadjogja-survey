@@ -24,9 +24,9 @@
 namespace dpadjogja\survey\controllers\setting;
 
 use Yii;
-use yii\filters\VerbFilter;
 use app\components\Controller;
 use mdm\admin\components\AccessControl;
+use yii\filters\VerbFilter;
 use dpadjogja\survey\models\SurveySetting;
 
 class AdminController extends Controller
