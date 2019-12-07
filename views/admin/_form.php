@@ -89,7 +89,7 @@ echo $form->field($respondent, 'work_id')
 	])
 	->label($respondent->getAttributeLabel('work_id')); ?>
 
-<div class="ln_solid"></div>
+<hr/>
 
 <?php $service = SurveyService::getService();
 echo $form->field($model, 'service_id')
@@ -114,7 +114,7 @@ echo !$model->isNewRecord ? $form->field($model, 'publish')
 
 <?php if(is_array($assessments) && !empty($assessments)) {?>
 
-<div class="ln_solid"></div>
+<hr/>
 
 <?php foreach ($assessments as $assessment) {
 		$answer = $assessment->getAnswerForForm();
@@ -125,7 +125,7 @@ echo !$model->isNewRecord ? $form->field($model, 'publish')
 	}
 }?>
 
-<div class="ln_solid"></div>
+<hr/>
 
 <?php echo $form->field($model, 'submitButton')
 	->submitButton(); ?>

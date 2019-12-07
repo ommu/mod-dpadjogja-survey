@@ -55,7 +55,7 @@ echo $form->field($model, 'permission', ['template' => '{label}{beginWrapper}{hi
 	->textarea(['rows'=>6, 'cols'=>50])
 	->label($model->getAttributeLabel('meta_keyword')); ?>
 
-<div class="ln_solid"></div>
+<hr/>
 
 <?php echo $form->field($model, 'submitButton')
 	->submitButton(); ?>

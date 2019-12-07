@@ -56,7 +56,7 @@ echo $form->field($model, 'instrument_id')
 	->textInput(['type'=>'date'])
 	->label($model->getAttributeLabel('modified_date')); ?>
 
-<div class="ln_solid"></div>
+<hr/>
 
 <?php echo $form->field($model, 'submitButton')
 	->submitButton(); ?>
