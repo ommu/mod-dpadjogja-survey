@@ -6,9 +6,9 @@
  * @var $model dpadjogja\survey\models\SurveyService
  * @var $searchModel dpadjogja\survey\models\search\SurveyService
  *
- * @author Putra Sudaryanto <putra@ommu.co>
+ * @author Putra Sudaryanto <putra@ommu.id>
  * @contact (+62)856-299-4114
- * @copyright Copyright (c) 2019 OMMU (www.ommu.co)
+ * @copyright Copyright (c) 2019 OMMU (www.ommu.id)
  * @created date 3 December 2019, 17:02 WIB
  * @link https://github.com/ommu/dpadjogja-survey
  *
