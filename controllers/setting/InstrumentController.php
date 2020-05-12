@@ -117,7 +117,7 @@ class InstrumentController extends Controller
 	public function actionCreate()
 	{
 		if(($category = Yii::$app->request->get('category')) == null)
-			throw new \yii\web\NotAcceptableHttpException(Yii::t('app', 'The requested page does not exist.'));
+			throw new \yii\web\ForbiddenHttpException(Yii::t('app', 'The requested page does not exist.'));
 
 		$model = new SurveyInstrument();
 		if($category)

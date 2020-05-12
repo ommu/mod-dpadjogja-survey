@@ -37,7 +37,7 @@ use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\Json;
-use ommu\users\models\Users;
+use app\models\Users;
 
 class SurveyInstrument extends \app\components\ActiveRecord
 {

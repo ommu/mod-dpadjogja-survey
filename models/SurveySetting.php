@@ -27,7 +27,7 @@
 namespace dpadjogja\survey\models;
 
 use Yii;
-use ommu\users\models\Users;
+use app\models\Users;
 use yii\helpers\Json;
 
 class SurveySetting extends \app\components\ActiveRecord
