@@ -60,34 +60,40 @@ class Surveys extends SurveysModel
 	 */
 	public function search($params, $column=null)
 	{
-		if(!($column && is_array($column)))
-			$query = SurveysModel::find()->alias('t');
-		else
-			$query = SurveysModel::find()->alias('t')->select($column);
+        if (!($column && is_array($column))) {
+            $query = SurveysModel::find()->alias('t');
+        } else {
+            $query = SurveysModel::find()->alias('t')->select($column);
+        }
 		$query->joinWith([
 			// 'respondent.education respondent', 
 			// 'service service', 
 			// 'creation creation', 
 			// 'modified modified'
 		]);
-		if((isset($params['sort']) && in_array($params['sort'], ['gender', '-gender', 'educationId', '-educationId', 'workId', '-workId'])) || (isset($params['gender']) && $params['gender'] != '') || (isset($params['educationId']) && $params['educationId'] != '') || (isset($params['workId']) && $params['workId'] != ''))
-			$query = $query->joinWith(['respondent respondent', 'respondent.education education', 'respondent.work work']);
-		if((isset($params['sort']) && in_array($params['sort'], ['service_id', '-service_id'])) || (isset($params['serviceName']) && $params['serviceName'] != ''))
-			$query = $query->joinWith(['service service']);
-		if((isset($params['sort']) && in_array($params['sort'], ['creationDisplayname', '-creationDisplayname'])) || (isset($params['creationDisplayname']) && $params['creationDisplayname'] != ''))
-			$query = $query->joinWith(['creation creation']);
-		if((isset($params['sort']) && in_array($params['sort'], ['modifiedDisplayname', '-modifiedDisplayname'])) || (isset($params['modifiedDisplayname']) && $params['modifiedDisplayname'] != ''))
-			$query = $query->joinWith(['modified modified']);
+        if ((isset($params['sort']) && in_array($params['sort'], ['gender', '-gender', 'educationId', '-educationId', 'workId', '-workId'])) || (isset($params['gender']) && $params['gender'] != '') || (isset($params['educationId']) && $params['educationId'] != '') || (isset($params['workId']) && $params['workId'] != '')) {
+            $query->joinWith(['respondent respondent', 'respondent.education education', 'respondent.work work']);
+        }
+        if ((isset($params['sort']) && in_array($params['sort'], ['service_id', '-service_id'])) || (isset($params['serviceName']) && $params['serviceName'] != '')) {
+            $query->joinWith(['service service']);
+        }
+        if ((isset($params['sort']) && in_array($params['sort'], ['creationDisplayname', '-creationDisplayname'])) || (isset($params['creationDisplayname']) && $params['creationDisplayname'] != '')) {
+            $query->joinWith(['creation creation']);
+        }
+        if ((isset($params['sort']) && in_array($params['sort'], ['modifiedDisplayname', '-modifiedDisplayname'])) || (isset($params['modifiedDisplayname']) && $params['modifiedDisplayname'] != '')) {
+            $query->joinWith(['modified modified']);
+        }
 
-		$query = $query->groupBy(['id']);
+		$query->groupBy(['id']);
 
-		// add conditions that should always apply here
+        // add conditions that should always apply here
 		$dataParams = [
 			'query' => $query,
 		];
-		// disable pagination agar data pada api tampil semua
-		if(isset($params['pagination']) && $params['pagination'] == 0)
-			$dataParams['pagination'] = false;
+        // disable pagination agar data pada api tampil semua
+        if (isset($params['pagination']) && $params['pagination'] == 0) {
+            $dataParams['pagination'] = false;
+        }
 		$dataProvider = new ActiveDataProvider($dataParams);
 
 		$attributes = array_keys($this->getTableSchema()->columns);
@@ -120,15 +126,16 @@ class Surveys extends SurveysModel
 			'defaultOrder' => ['id' => SORT_DESC],
 		]);
 
-		if(Yii::$app->request->get('id'))
-			unset($params['id']);
+        if (Yii::$app->request->get('id')) {
+            unset($params['id']);
+        }
 		$this->load($params);
 
-		if(!$this->validate()) {
-			// uncomment the following line if you do not want to return any records when validation fails
-			// $query->where('0=1');
-			return $dataProvider;
-		}
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
 		// grid filtering conditions
 		$query->andFilterWhere([
@@ -145,14 +152,15 @@ class Surveys extends SurveysModel
 			'respondent.work_id' => $this->workId,
 		]);
 
-		if(isset($params['trash']))
-			$query->andFilterWhere(['NOT IN', 't.publish', [0,1]]);
-		else {
-			if(!isset($params['publish']) || (isset($params['publish']) && $params['publish'] == ''))
-				$query->andFilterWhere(['IN', 't.publish', [0,1]]);
-			else
-				$query->andFilterWhere(['t.publish' => $this->publish]);
-		}
+        if (isset($params['trash'])) {
+            $query->andFilterWhere(['NOT IN', 't.publish', [0,1]]);
+        } else {
+            if (!isset($params['publish']) || (isset($params['publish']) && $params['publish'] == '')) {
+                $query->andFilterWhere(['IN', 't.publish', [0,1]]);
+            } else {
+                $query->andFilterWhere(['t.publish' => $this->publish]);
+            }
+        }
 
 		$query->andFilterWhere(['like', 'service.service_name', $this->serviceName])
 			->andFilterWhere(['like', 'creation.displayname', $this->creationDisplayname])

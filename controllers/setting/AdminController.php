@@ -36,8 +36,9 @@ class AdminController extends Controller
 	 */
 	public function init()
 	{
-		parent::init();
-		$this->subMenu = $this->module->params['setting_submenu'];
+        parent::init();
+
+        $this->subMenu = $this->module->params['setting_submenu'];
 	}
 
 	/**
@@ -45,17 +46,17 @@ class AdminController extends Controller
 	 */
 	public function behaviors()
 	{
-		return [
-			'access' => [
-				'class' => AccessControl::className(),
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'delete' => ['POST'],
-				],
-			],
-		];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
 	}
 
 	/**
@@ -64,24 +65,26 @@ class AdminController extends Controller
 	public function actionIndex()
 	{
 		$model = SurveySetting::findOne(1);
-		if ($model === null) 
-			$model = new SurveySetting(['id'=>1]);
+        if ($model === null) {
+            $model = new SurveySetting(['id' => 1]);
+        }
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey setting success updated.'));
-				return $this->redirect(['update']);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey setting success updated.'));
+                return $this->redirect(['update']);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Survey Settings');
 		$this->view->description = '';
@@ -99,25 +102,27 @@ class AdminController extends Controller
 	public function actionUpdate()
 	{
 		$model = SurveySetting::findOne(1);
-		if($model == null)
-			$model = new SurveySetting(['id'=>1]);
+        if ($model == null) {
+            $model = new SurveySetting(['id' => 1]);
+        }
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey setting success updated.'));
-				return $this->redirect(['update']);
-				//return $this->redirect(['view', 'id'=>$model->id]);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey setting success updated.'));
+                return $this->redirect(['update']);
+                //return $this->redirect(['view', 'id' => $model->id]);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->subMenu = $this->module->params['setting_submenu'];
 		$this->view->title = Yii::t('app', 'Survey Settings');
@@ -153,8 +158,9 @@ class AdminController extends Controller
 	 */
 	protected function findModel($id)
 	{
-		if(($model = SurveySetting::findOne($id)) !== null)
-			return $model;
+        if (($model = SurveySetting::findOne($id)) !== null) {
+            return $model;
+        }
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
 	}

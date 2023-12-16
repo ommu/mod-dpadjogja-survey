@@ -91,20 +91,22 @@ class SurveyService extends \app\components\ActiveRecord
 	 */
 	public function getSurveys($count=false, $publish=1)
 	{
-		if($count == false)
-			return $this->hasMany(Surveys::className(), ['service_id' => 'id'])
-			->alias('surveys')
-			->andOnCondition([sprintf('%s.publish', 'surveys') => $publish]);
+        if ($count == false) {
+            return $this->hasMany(Surveys::className(), ['service_id' => 'id'])
+                ->alias('surveys')
+                ->andOnCondition([sprintf('%s.publish', 'surveys') => $publish]);
+        }
 
 		$model = Surveys::find()
-			->alias('t')
-			->where(['service_id' => $this->id]);
-		if($publish == 0)
-			$model->unpublish();
-		elseif($publish == 1)
-			$model->published();
-		elseif($publish == 2)
-			$model->deleted();
+            ->alias('t')
+            ->where(['service_id' => $this->id]);
+        if ($publish == 0) {
+            $model->unpublish();
+        } else if ($publish == 1) {
+            $model->published();
+        } else if ($publish == 2) {
+            $model->deleted();
+        }
 		$surveys = $model->count();
 
 		return $surveys ? $surveys : 0;
@@ -140,18 +142,20 @@ class SurveyService extends \app\components\ActiveRecord
 	 */
 	public function init()
 	{
-		parent::init();
+        parent::init();
 
-		if(!(Yii::$app instanceof \app\components\Application))
-			return;
+        if (!(Yii::$app instanceof \app\components\Application)) {
+            return;
+        }
 
-		if(!$this->hasMethod('search'))
-			return;
+        if (!$this->hasMethod('search')) {
+            return;
+        }
 
 		$this->templateColumns['_no'] = [
 			'header' => '#',
 			'class' => 'app\components\grid\SerialColumn',
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['service_name'] = [
 			'attribute' => 'service_name',
@@ -164,7 +168,7 @@ class SurveyService extends \app\components\ActiveRecord
 			'value' => function($model, $key, $index, $column) {
 				return $model->order;
 			},
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
@@ -207,20 +211,20 @@ class SurveyService extends \app\components\ActiveRecord
 			'attribute' => 'surveys',
 			'value' => function($model, $key, $index, $column) {
 				$surveys = $model->getSurveys(true);
-				return Html::a($surveys, ['admin/manage', 'service'=>$model->primaryKey, 'publish'=>1], ['title'=>Yii::t('app', '{count} surveys', ['count'=>$surveys]), 'data-pjax'=>0]);
+				return Html::a($surveys, ['admin/manage', 'service' => $model->primaryKey, 'publish' => 1], ['title' => Yii::t('app', '{count} surveys', ['count' => $surveys]), 'data-pjax' => 0]);
 			},
 			'filter' => false,
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 		];
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
 			'value' => function($model, $key, $index, $column) {
-				$url = Url::to(['publish', 'id'=>$model->primaryKey]);
+				$url = Url::to(['publish', 'id' => $model->primaryKey]);
 				return $this->quickAction($url, $model->publish);
 			},
 			'filter' => $this->filterYesNo(),
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 			'visible' => !Yii::$app->request->get('trash') ? true : false,
 		];
@@ -231,35 +235,38 @@ class SurveyService extends \app\components\ActiveRecord
 	 */
 	public static function getInfo($id, $column=null)
 	{
-		if($column != null) {
-			$model = self::find();
-			if(is_array($column))
-				$model->select($column);
-			else
-				$model->select([$column]);
-			$model = $model->where(['id' => $id])->one();
-			return is_array($column) ? $model : $model->$column;
-			
-		} else {
-			$model = self::findOne($id);
-			return $model;
-		}
+        if ($column != null) {
+            $model = self::find();
+            if (is_array($column)) {
+                $model->select($column);
+            } else {
+                $model->select([$column]);
+            }
+            $model = $model->where(['id' => $id])->one();
+            return is_array($column) ? $model : $model->$column;
+
+        } else {
+            $model = self::findOne($id);
+            return $model;
+        }
 	}
 
 	/**
 	 * function getService
 	 */
-	public static function getService($publish=null, $array=true) 
+	public static function getService($publish=null, $array=true)
 	{
 		$model = self::find()->alias('t')
 			->select(['t.id', 't.service_name']);
-		if($publish != null)
-			$model->andWhere(['t.publish' => $publish]);
+        if ($publish != null) {
+            $model->andWhere(['t.publish' => $publish]);
+        }
 
 		$model = $model->orderBy('t.order ASC')->all();
 
-		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'service_name');
+        if ($array == true) {
+            return \yii\helpers\ArrayHelper::map($model, 'id', 'service_name');
+        }
 
 		return $model;
 	}
@@ -280,15 +287,17 @@ class SurveyService extends \app\components\ActiveRecord
 	 */
 	public function beforeValidate()
 	{
-		if(parent::beforeValidate()) {
-			if($this->isNewRecord) {
-				if($this->creation_id == null)
-					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			} else {
-				if($this->modified_id == null)
-					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			}
-		}
-		return true;
+        if (parent::beforeValidate()) {
+            if ($this->isNewRecord) {
+                if ($this->creation_id == null) {
+                    $this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            } else {
+                if ($this->modified_id == null) {
+                    $this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            }
+        }
+        return true;
 	}
 }

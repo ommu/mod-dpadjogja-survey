@@ -25,7 +25,7 @@ use yii\helpers\ArrayHelper;
 <div class="survey-respondent-form">
 
 <?php $form = ActiveForm::begin([
-	'options' => ['class'=>'form-horizontal form-label-left'],
+	'options' => ['class' => 'form-horizontal form-label-left'],
 	'enableClientValidation' => true,
 	'enableAjaxValidation' => false,
 	//'enableClientScript' => true,
@@ -42,9 +42,9 @@ use yii\helpers\ArrayHelper;
 echo $form->field($model, 'gender')
 	->widget(Selectize::className(), [
 		'options' => [
-			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('gender'))]),
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($model->getAttributeLabel('gender'))]),
 		],
-		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('gender'))])], $gender),
+		'items' => ArrayHelper::merge(['' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($model->getAttributeLabel('gender'))])], $gender),
 		'pluginOptions' => [
 			'persist' => false,
 			'createOnBlur' => false,
@@ -54,17 +54,17 @@ echo $form->field($model, 'gender')
 	->label($model->getAttributeLabel('gender')); ?>
 
 <?php echo $form->field($model, 'user_id')
-	->textInput(['type'=>'number', 'min'=>'1'])
+	->textInput(['type' => 'number', 'min' => '1'])
 	->label($model->getAttributeLabel('user_id')); ?>
 
 <?php $education = SurveyEducation::getEducation();
 echo $form->field($model, 'education_id')
-	->dropDownList($education, ['prompt'=>''])
+	->dropDownList($education, ['prompt' => ''])
 	->label($model->getAttributeLabel('education_id')); ?>
 
 <?php $work = SurveyWork::getWork();
 echo $form->field($model, 'work_id')
-	->dropDownList($work, ['prompt'=>''])
+	->dropDownList($work, ['prompt' => ''])
 	->label($model->getAttributeLabel('work_id')); ?>
 
 <hr/>

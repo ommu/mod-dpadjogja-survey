@@ -22,7 +22,7 @@ use yii\widgets\Pjax;
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->params['menu']['content'] = [
-	['label' => Yii::t('app', 'Add Survey'), 'url' => Url::to(['create']), 'icon' => 'plus-square', 'htmlOptions' => ['class'=>'btn btn-success']],
+	['label' => Yii::t('app', 'Add Survey'), 'url' => Url::to(['create']), 'icon' => 'plus-square', 'htmlOptions' => ['class' => 'btn btn-success']],
 ];
 $this->params['menu']['option'] = [
 	//['label' => Yii::t('app', 'Search'), 'url' => 'javascript:void(0);'],
@@ -33,15 +33,17 @@ $this->params['menu']['option'] = [
 <div class="surveys-manage">
 <?php Pjax::begin(); ?>
 
-<?php if($service != null)
-	echo $this->render('/service/admin_view', ['model'=>$service, 'small'=>true]); ?>
+<?php if ($service != null) {
+	echo $this->render('/service/admin_view', ['model' => $service, 'small' => true]);
+} ?>
 
-<?php if($respondent != null)
-	echo $this->render('/respondent/admin_view', ['model'=>$respondent, 'small'=>true]); ?>
+<?php if ($respondent != null) {
+	echo $this->render('/respondent/admin_view', ['model' => $respondent, 'small' => true]);
+} ?>
 
-<?php //echo $this->render('_search', ['model'=>$searchModel]); ?>
+<?php //echo $this->render('_search', ['model' => $searchModel]); ?>
 
-<?php echo $this->render('_option_form', ['model'=>$searchModel, 'gridColumns'=>$searchModel->activeDefaultColumns($columns), 'route'=>$this->context->route]); ?>
+<?php echo $this->render('_option_form', ['model' => $searchModel, 'gridColumns' => $searchModel->activeDefaultColumns($columns), 'route' => $this->context->route]); ?>
 
 <?php
 $columnData = $columns;
@@ -49,19 +51,22 @@ array_push($columnData, [
 	'class' => 'app\components\grid\ActionColumn',
 	'header' => Yii::t('app', 'Option'),
 	'urlCreator' => function($action, $model, $key, $index) {
-		if($action == 'view')
-			return Url::to(['view', 'id'=>$key]);
-		if($action == 'update')
-			return Url::to(['update', 'id'=>$key]);
-		if($action == 'delete')
-			return Url::to(['delete', 'id'=>$key]);
+        if ($action == 'view') {
+            return Url::to(['view', 'id' => $key]);
+        }
+        if ($action == 'update') {
+            return Url::to(['update', 'id' => $key]);
+        }
+        if ($action == 'delete') {
+            return Url::to(['delete', 'id' => $key]);
+        }
 	},
 	'buttons' => [
 		'view' => function ($url, $model, $key) {
-			return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title'=>Yii::t('app', 'Detail Survey'), 'data-pjax'=>0]);
+			return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title' => Yii::t('app', 'Detail Survey'), 'data-pjax' => 0]);
 		},
 		'update' => function ($url, $model, $key) {
-			return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title'=>Yii::t('app', 'Update Survey')]);
+			return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => Yii::t('app', 'Update Survey')]);
 		},
 		'delete' => function ($url, $model, $key) {
 			return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [

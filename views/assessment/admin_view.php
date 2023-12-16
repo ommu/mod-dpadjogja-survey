@@ -17,9 +17,9 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 
-if(!$small) {
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Assessments'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->survey->respondent->education->id;
+if (!$small) {
+    $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Assessments'), 'url' => ['index']];
+    $this->params['breadcrumbs'][] = $model->survey->respondent->education->id;
 } ?>
 
 <div class="survey-assessment-view">
@@ -34,9 +34,10 @@ $attributes = [
 	[
 		'attribute' => 'surveyRespondentId',
 		'value' => function ($model) {
-			$surveyRespondentId = Yii::t('app', 'Number #{id}', ['id'=>$model->survey_id]);
-			if($surveyRespondentId != '-')
-				return Html::a($surveyRespondentId, ['admin/view', 'id'=>$model->survey_id], ['title'=>$surveyRespondentId, 'class'=>'modal-btn']);
+			$surveyRespondentId = Yii::t('app', 'Number #{id}', ['id' => $model->survey_id]);
+            if ($surveyRespondentId != '-') {
+				return Html::a($surveyRespondentId, ['admin/view', 'id' => $model->survey_id], ['title' => $surveyRespondentId, 'class' => 'modal-btn']);
+            }
 			return $surveyRespondentId;
 		},
 		'format' => 'html',
@@ -45,8 +46,9 @@ $attributes = [
 		'attribute' => 'instrumentQuestion',
 		'value' => function ($model) {
 			$instrumentQuestion = isset($model->instrument) ? $model->instrument->question : '-';
-			if($instrumentQuestion != '-')
-				return Html::a($instrumentQuestion, ['setting/instrument/view', 'id'=>$model->instrument_id], ['title'=>$instrumentQuestion, 'class'=>'modal-btn']);
+            if ($instrumentQuestion != '-') {
+				return Html::a($instrumentQuestion, ['setting/instrument/view', 'id' => $model->instrument_id], ['title' => $instrumentQuestion, 'class' => 'modal-btn']);
+            }
 			return $instrumentQuestion;
 		},
 		'format' => 'html',
@@ -76,7 +78,7 @@ $attributes = [
 echo DetailView::widget([
 	'model' => $model,
 	'options' => [
-		'class'=>'table table-striped detail-view',
+		'class' => 'table table-striped detail-view',
 	],
 	'attributes' => $attributes,
 ]); ?>

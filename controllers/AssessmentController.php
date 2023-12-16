@@ -38,9 +38,11 @@ class AssessmentController extends Controller
 	 */
 	public function init()
 	{
-		parent::init();
-		if(Yii::$app->request->get('id') || Yii::$app->request->get('survey'))
-			$this->subMenu = $this->module->params['survey_submenu'];
+        parent::init();
+
+        if (Yii::$app->request->get('id') || Yii::$app->request->get('survey')) {
+            $this->subMenu = $this->module->params['survey_submenu'];
+        }
 	}
 
 	/**
@@ -48,17 +50,17 @@ class AssessmentController extends Controller
 	 */
 	public function behaviors()
 	{
-		return [
-			'access' => [
-				'class' => AccessControl::className(),
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'delete' => ['POST'],
-				],
-			],
-		];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
 	}
 
 	/**
@@ -66,7 +68,7 @@ class AssessmentController extends Controller
 	 */
 	public function actionIndex()
 	{
-		return $this->redirect(['manage']);
+        return $this->redirect(['manage']);
 	}
 
 	/**
@@ -75,25 +77,27 @@ class AssessmentController extends Controller
 	 */
 	public function actionManage()
 	{
-		$searchModel = new SurveyAssessmentSearch();
-		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new SurveyAssessmentSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-		$gridColumn = Yii::$app->request->get('GridColumn', null);
-		$cols = [];
-		if($gridColumn != null && count($gridColumn) > 0) {
-			foreach($gridColumn as $key => $val) {
-				if($gridColumn[$key] == 1)
-					$cols[] = $key;
-			}
-		}
-		$columns = $searchModel->getGridColumn($cols);
+        $gridColumn = Yii::$app->request->get('GridColumn', null);
+        $cols = [];
+        if ($gridColumn != null && count($gridColumn) > 0) {
+            foreach ($gridColumn as $key => $val) {
+                if ($gridColumn[$key] == 1) {
+                    $cols[] = $key;
+                }
+            }
+        }
+        $columns = $searchModel->getGridColumn($cols);
 
-		if(($survey = Yii::$app->request->get('survey')) != null) {
-			$this->subMenuParam = $survey;
+        if (($survey = Yii::$app->request->get('survey')) != null) {
+            $this->subMenuParam = $survey;
 			$survey = \dpadjogja\survey\models\Surveys::findOne($survey);
 		}
-		if(($instrument = Yii::$app->request->get('instrument')) != null)
-			$instrument = \dpadjogja\survey\models\SurveyInstrument::findOne($instrument);
+        if (($instrument = Yii::$app->request->get('instrument')) != null) {
+            $instrument = \dpadjogja\survey\models\SurveyInstrument::findOne($instrument);
+        }
 
 		$this->view->title = Yii::t('app', 'Assessments');
 		$this->view->description = '';
@@ -114,7 +118,7 @@ class AssessmentController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$model = $this->findModel($id);
+        $model = $this->findModel($id);
 		$this->subMenuParam = $model->survey_id;
 
 		$this->view->title = Yii::t('app', 'Detail Assessment: {survey-id}', ['survey-id' => $model->survey->respondent->education->id]);
@@ -122,6 +126,7 @@ class AssessmentController extends Controller
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
 			'model' => $model,
+			'small' => false,
 		]);
 	}
 
@@ -133,8 +138,6 @@ class AssessmentController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-
 		$model = $this->findModel($id);
 		$model->delete();
 
@@ -151,8 +154,9 @@ class AssessmentController extends Controller
 	 */
 	protected function findModel($id)
 	{
-		if(($model = SurveyAssessment::findOne($id)) !== null)
-			return $model;
+        if (($model = SurveyAssessment::findOne($id)) !== null) {
+            return $model;
+        }
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
 	}

@@ -91,12 +91,13 @@ class SurveyEducation extends \app\components\ActiveRecord
 	 */
 	public function getRespondents($count=false)
 	{
-		if($count == false)
-			return $this->hasMany(SurveyRespondent::className(), ['education_id' => 'id']);
+        if ($count == false) {
+            return $this->hasMany(SurveyRespondent::className(), ['education_id' => 'id']);
+        }
 
 		$model = SurveyRespondent::find()
-			->alias('t')
-			->where(['education_id' => $this->id]);
+            ->alias('t')
+            ->where(['education_id' => $this->id]);
 		$respondents = $model->count();
 
 		return $respondents ? $respondents : 0;
@@ -132,18 +133,20 @@ class SurveyEducation extends \app\components\ActiveRecord
 	 */
 	public function init()
 	{
-		parent::init();
+        parent::init();
 
-		if(!(Yii::$app instanceof \app\components\Application))
-			return;
+        if (!(Yii::$app instanceof \app\components\Application)) {
+            return;
+        }
 
-		if(!$this->hasMethod('search'))
-			return;
+        if (!$this->hasMethod('search')) {
+            return;
+        }
 
 		$this->templateColumns['_no'] = [
 			'header' => '#',
 			'class' => 'app\components\grid\SerialColumn',
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['education_level'] = [
 			'attribute' => 'education_level',
@@ -156,7 +159,7 @@ class SurveyEducation extends \app\components\ActiveRecord
 			'value' => function($model, $key, $index, $column) {
 				return $model->order;
 			},
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
@@ -199,20 +202,20 @@ class SurveyEducation extends \app\components\ActiveRecord
 			'attribute' => 'respondents',
 			'value' => function($model, $key, $index, $column) {
 				$respondents = $model->getRespondents(true);
-				return Html::a($respondents, ['respondent/manage', 'education'=>$model->primaryKey], ['title'=>Yii::t('app', '{count} respondents', ['count'=>$respondents]), 'data-pjax'=>0]);
+				return Html::a($respondents, ['respondent/manage', 'education' => $model->primaryKey], ['title' => Yii::t('app', '{count} respondents', ['count' => $respondents]), 'data-pjax' => 0]);
 			},
 			'filter' => false,
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 		];
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
 			'value' => function($model, $key, $index, $column) {
-				$url = Url::to(['publish', 'id'=>$model->primaryKey]);
+				$url = Url::to(['publish', 'id' => $model->primaryKey]);
 				return $this->quickAction($url, $model->publish);
 			},
 			'filter' => $this->filterYesNo(),
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 			'visible' => !Yii::$app->request->get('trash') ? true : false,
 		];
@@ -223,35 +226,38 @@ class SurveyEducation extends \app\components\ActiveRecord
 	 */
 	public static function getInfo($id, $column=null)
 	{
-		if($column != null) {
-			$model = self::find();
-			if(is_array($column))
-				$model->select($column);
-			else
-				$model->select([$column]);
-			$model = $model->where(['id' => $id])->one();
-			return is_array($column) ? $model : $model->$column;
-			
-		} else {
-			$model = self::findOne($id);
-			return $model;
-		}
+        if ($column != null) {
+            $model = self::find();
+            if (is_array($column)) {
+                $model->select($column);
+            } else {
+                $model->select([$column]);
+            }
+            $model = $model->where(['id' => $id])->one();
+            return is_array($column) ? $model : $model->$column;
+
+        } else {
+            $model = self::findOne($id);
+            return $model;
+        }
 	}
 
 	/**
 	 * function getEducation
 	 */
-	public static function getEducation($publish=null, $array=true) 
+	public static function getEducation($publish=null, $array=true)
 	{
 		$model = self::find()->alias('t')
 			->select(['t.id', 't.education_level']);
-		if($publish != null)
-			$model->andWhere(['t.publish' => $publish]);
+        if ($publish != null) {
+            $model->andWhere(['t.publish' => $publish]);
+        }
 
 		$model = $model->orderBy('t.order ASC')->all();
 
-		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'education_level');
+        if ($array == true) {
+            return \yii\helpers\ArrayHelper::map($model, 'id', 'education_level');
+        }
 
 		return $model;
 	}
@@ -272,15 +278,17 @@ class SurveyEducation extends \app\components\ActiveRecord
 	 */
 	public function beforeValidate()
 	{
-		if(parent::beforeValidate()) {
-			if($this->isNewRecord) {
-				if($this->creation_id == null)
-					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			} else {
-				if($this->modified_id == null)
-					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			}
-		}
-		return true;
+        if (parent::beforeValidate()) {
+            if ($this->isNewRecord) {
+                if ($this->creation_id == null) {
+                    $this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            } else {
+                if ($this->modified_id == null) {
+                    $this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            }
+        }
+        return true;
 	}
 }

@@ -26,7 +26,7 @@ use yii\helpers\ArrayHelper;
 <div class="surveys-form">
 
 <?php $form = ActiveForm::begin([
-	'options' => ['class'=>'form-horizontal form-label-left'],
+	'options' => ['class' => 'form-horizontal form-label-left'],
 	'enableClientValidation' => false,
 	'enableAjaxValidation' => false,
 	//'enableClientScript' => true,
@@ -44,9 +44,9 @@ use yii\helpers\ArrayHelper;
 echo $form->field($respondent, 'gender')
 	->widget(Selectize::className(), [
 		'options' => [
-			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('gender'))]),
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('gender'))]),
 		],
-		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('gender'))])], $gender),
+		'items' => ArrayHelper::merge(['' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('gender'))])], $gender),
 		'pluginOptions' => [
 			'persist' => false,
 			'createOnBlur' => false,
@@ -56,16 +56,16 @@ echo $form->field($respondent, 'gender')
 	->label($respondent->getAttributeLabel('gender')); ?>
 
 <?php echo $form->field($respondent, 'user_id')
-	->textInput(['type'=>'number', 'min'=>'1'])
+	->textInput(['type' => 'number', 'min' => '1'])
 	->label($respondent->getAttributeLabel('user_id')); ?>
 
 <?php $education = SurveyEducation::getEducation();
 echo $form->field($respondent, 'education_id')
 	->widget(Selectize::className(), [
 		'options' => [
-			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('education_id'))]),
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('education_id'))]),
 		],
-		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('education_id'))])], $education),
+		'items' => ArrayHelper::merge(['' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('education_id'))])], $education),
 		'pluginOptions' => [
 			'persist' => false,
 			'createOnBlur' => false,
@@ -78,9 +78,9 @@ echo $form->field($respondent, 'education_id')
 echo $form->field($respondent, 'work_id')
 	->widget(Selectize::className(), [
 		'options' => [
-			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('work_id'))]),
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('work_id'))]),
 		],
-		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($respondent->getAttributeLabel('work_id'))])], $work),
+		'items' => ArrayHelper::merge(['' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($respondent->getAttributeLabel('work_id'))])], $work),
 		'pluginOptions' => [
 			'persist' => false,
 			'createOnBlur' => false,
@@ -95,9 +95,9 @@ echo $form->field($respondent, 'work_id')
 echo $form->field($model, 'service_id')
 	->widget(Selectize::className(), [
 		'options' => [
-			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('service_id'))]),
+			'placeholder' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($model->getAttributeLabel('service_id'))]),
 		],
-		'items' => ArrayHelper::merge([''=>Yii::t('app', 'Select a {attribute}..', ['attribute'=>strtolower($model->getAttributeLabel('service_id'))])], $service),
+		'items' => ArrayHelper::merge(['' => Yii::t('app', 'Select a {attribute}..', ['attribute' => strtolower($model->getAttributeLabel('service_id'))])], $service),
 		'pluginOptions' => [
 			'persist' => false,
 			'createOnBlur' => false,
@@ -106,24 +106,27 @@ echo $form->field($model, 'service_id')
 	])
 	->label($model->getAttributeLabel('service_id')); ?>
 
-<?php if($model->isNewRecord && !$model->getErrors())
+<?php 
+if ($model->isNewRecord && !$model->getErrors()) {
 	$model->publish = 1;
+}
 echo !$model->isNewRecord ? $form->field($model, 'publish')
 	->checkbox()
 	->label($model->getAttributeLabel('publish')) : ''; ?>
 
-<?php if(is_array($assessments) && !empty($assessments)) {?>
+<?php if (is_array($assessments) && !empty($assessments)) {?>
 
 <hr/>
 
 <?php foreach ($assessments as $assessment) {
 		$answer = $assessment->getAnswerForForm();
 		$assessmentId = $assessment->id;
-		echo $form->field($model, "assessments[$assessmentId]", ['template' => '{beginWrapper}'.$assessment->question.'{input}{error}{hint}{endWrapper}', 'horizontalCssClasses' => ['wrapper'=>'col-md-6 col-sm-9 col-xs-12 col-sm-offset-3']])
+		echo $form->field($model, "assessments[$assessmentId]", ['template' => '{beginWrapper}'.$assessment->question.'{input}{error}{hint}{endWrapper}', 'horizontalCssClasses' => ['wrapper' => 'col-md-6 col-sm-9 col-xs-12 col-sm-offset-3']])
 			->radioList($answer)
 			->label($model->getAttributeLabel('assessments'));
 	}
-}?>
+}
+?>
 
 <hr/>
 

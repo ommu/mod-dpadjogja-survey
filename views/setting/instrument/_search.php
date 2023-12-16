@@ -31,7 +31,7 @@ use dpadjogja\survey\models\SurveyCategory;
 
 		<?php $category = SurveyCategory::getCategory();
 		echo $form->field($model, 'cat_id')
-			->dropDownList($category, ['prompt'=>'']);?>
+			->dropDownList($category, ['prompt' => '']);?>
 
 		<?php echo $form->field($model, 'question');?>
 
@@ -53,7 +53,7 @@ use dpadjogja\survey\models\SurveyCategory;
 			->input('date');?>
 
 		<?php echo $form->field($model, 'publish')
-			->dropDownList($model->filterYesNo(), ['prompt'=>'']);?>
+			->dropDownList($model->filterYesNo(), ['prompt' => '']);?>
 
 		<div class="form-group">
 			<?php echo Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']); ?>

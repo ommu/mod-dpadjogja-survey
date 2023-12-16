@@ -35,15 +35,15 @@ use dpadjogja\survey\models\SurveyWork;
 
 		<?php $education = SurveyEducation::getEducation();
 		echo $form->field($model, 'education_id')
-			->dropDownList($education, ['prompt'=>'']);?>
+			->dropDownList($education, ['prompt' => '']);?>
 
 		<?php $work = SurveyWork::getWork();
 		echo $form->field($model, 'work_id')
-			->dropDownList($work, ['prompt'=>'']);?>
+			->dropDownList($work, ['prompt' => '']);?>
 
 		<?php $gender = $model::getGender();
 			echo $form->field($model, 'gender')
-			->dropDownList($gender, ['prompt'=>'']);?>
+			->dropDownList($gender, ['prompt' => '']);?>
 
 		<?php echo $form->field($model, 'creation_date')
 			->input('date');?>

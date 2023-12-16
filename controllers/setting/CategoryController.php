@@ -42,8 +42,9 @@ class CategoryController extends Controller
 	 */
 	public function init()
 	{
-		parent::init();
-		$this->subMenu = $this->module->params['setting_submenu'];
+        parent::init();
+
+        $this->subMenu = $this->module->params['setting_submenu'];
 	}
 
 	/**
@@ -51,18 +52,18 @@ class CategoryController extends Controller
 	 */
 	public function behaviors()
 	{
-		return [
-			'access' => [
-				'class' => AccessControl::className(),
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'delete' => ['POST'],
-					'publish' => ['POST'],
-				],
-			],
-		];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                    'publish' => ['POST'],
+                ],
+            ],
+        ];
 	}
 
 	/**
@@ -70,7 +71,7 @@ class CategoryController extends Controller
 	 */
 	public function actionIndex()
 	{
-		return $this->redirect(['manage']);
+        return $this->redirect(['manage']);
 	}
 
 	/**
@@ -79,18 +80,19 @@ class CategoryController extends Controller
 	 */
 	public function actionManage()
 	{
-		$searchModel = new SurveyCategorySearch();
-		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new SurveyCategorySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-		$gridColumn = Yii::$app->request->get('GridColumn', null);
-		$cols = [];
-		if($gridColumn != null && count($gridColumn) > 0) {
-			foreach($gridColumn as $key => $val) {
-				if($gridColumn[$key] == 1)
-					$cols[] = $key;
-			}
-		}
-		$columns = $searchModel->getGridColumn($cols);
+        $gridColumn = Yii::$app->request->get('GridColumn', null);
+        $cols = [];
+        if ($gridColumn != null && count($gridColumn) > 0) {
+            foreach ($gridColumn as $key => $val) {
+                if ($gridColumn[$key] == 1) {
+                    $cols[] = $key;
+                }
+            }
+        }
+        $columns = $searchModel->getGridColumn($cols);
 
 		$this->view->title = Yii::t('app', 'Categories');
 		$this->view->description = '';
@@ -109,25 +111,27 @@ class CategoryController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model = new SurveyCategory();
+        $model = new SurveyCategory();
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success created.'));
-				if(!Yii::$app->request->isAjax)
-					return $this->redirect(['manage']);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success created.'));
+                if (!Yii::$app->request->isAjax) {
+                    return $this->redirect(['manage']);
+                }
+                return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Create Category');
 		$this->view->description = '';
@@ -147,23 +151,25 @@ class CategoryController extends Controller
 	{
 		$model = $this->findModel($id);
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success updated.'));
-				if(!Yii::$app->request->isAjax)
-					return $this->redirect(['manage']);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success updated.'));
+                if (!Yii::$app->request->isAjax) {
+                    return $this->redirect(['manage']);
+                }
+                return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Update Category: {category-name}', ['category-name' => $model->category_name]);
 		$this->view->description = '';
@@ -180,13 +186,14 @@ class CategoryController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$model = $this->findModel($id);
+        $model = $this->findModel($id);
 
 		$this->view->title = Yii::t('app', 'Detail Category: {category-name}', ['category-name' => $model->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
 			'model' => $model,
+			'small' => false,
 		]);
 	}
 
@@ -201,7 +208,7 @@ class CategoryController extends Controller
 		$model = $this->findModel($id);
 		$model->publish = 2;
 
-		if($model->save(false, ['publish','modified_id'])) {
+        if ($model->save(false, ['publish', 'modified_id'])) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success deleted.'));
 			return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 		}
@@ -219,7 +226,7 @@ class CategoryController extends Controller
 		$replace = $model->publish == 1 ? 0 : 1;
 		$model->publish = $replace;
 
-		if($model->save(false, ['publish','modified_id'])) {
+        if ($model->save(false, ['publish', 'modified_id'])) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey category success updated.'));
 			return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 		}
@@ -234,8 +241,9 @@ class CategoryController extends Controller
 	 */
 	protected function findModel($id)
 	{
-		if(($model = SurveyCategory::findOne($id)) !== null)
-			return $model;
+        if (($model = SurveyCategory::findOne($id)) !== null) {
+            return $model;
+        }
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
 	}

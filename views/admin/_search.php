@@ -33,7 +33,7 @@ use dpadjogja\survey\models\SurveyService;
 
 		<?php $service = SurveyService::getService();
 		echo $form->field($model, 'service_id')
-			->dropDownList($service, ['prompt'=>'']);?>
+			->dropDownList($service, ['prompt' => '']);?>
 
 		<?php echo $form->field($model, 'creation_date')
 			->input('date');?>
@@ -49,7 +49,7 @@ use dpadjogja\survey\models\SurveyService;
 			->input('date');?>
 
 		<?php echo $form->field($model, 'publish')
-			->dropDownList($model->filterYesNo(), ['prompt'=>'']);?>
+			->dropDownList($model->filterYesNo(), ['prompt' => '']);?>
 
 		<div class="form-group">
 			<?php echo Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']); ?>

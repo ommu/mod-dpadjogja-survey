@@ -21,16 +21,16 @@ use yii\widgets\Pjax;
 
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Survey'), 'url' => ['admin/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Setting'), 'url' => ['setting/admin/index']];
-if($category) {
+if ($category) {
 	$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Category'), 'url' => ['setting/category/index']];
-	$this->params['breadcrumbs'][] = ['label' => $category->category_name, 'url' => ['setting/category/view', 'id'=>$category->id]];
+	$this->params['breadcrumbs'][] = ['label' => $category->category_name, 'url' => ['setting/category/view', 'id' => $category->id]];
 	$this->params['breadcrumbs'][] = Yii::t('app', 'Instruments');
 } else
 	$this->params['breadcrumbs'][] = $this->title;
 
-if($category) {
+if ($category) {
 	$this->params['menu']['content'] = [
-		['label' => Yii::t('app', 'Add Instrument'), 'url' => Url::to(['create', 'category'=>$category->id]), 'icon' => 'plus-square', 'htmlOptions' => ['class'=>'btn btn-success']],
+		['label' => Yii::t('app', 'Add Instrument'), 'url' => Url::to(['create', 'category' => $category->id]), 'icon' => 'plus-square', 'htmlOptions' => ['class' => 'btn btn-success']],
 	];
 }
 $this->params['menu']['option'] = [
@@ -42,12 +42,13 @@ $this->params['menu']['option'] = [
 <div class="survey-instrument-manage">
 <?php Pjax::begin(); ?>
 
-<?php if($category != null)
-	echo $this->render('/setting/category/admin_view', ['model'=>$category, 'small'=>true]); ?>
+<?php if ($category != null) {
+	echo $this->render('/setting/category/admin_view', ['model' => $category, 'small' => true]);
+} ?>
 
-<?php //echo $this->render('_search', ['model'=>$searchModel]); ?>
+<?php //echo $this->render('_search', ['model' => $searchModel]); ?>
 
-<?php echo $this->render('_option_form', ['model'=>$searchModel, 'gridColumns'=>$searchModel->activeDefaultColumns($columns), 'route'=>$this->context->route]); ?>
+<?php echo $this->render('_option_form', ['model' => $searchModel, 'gridColumns' => $searchModel->activeDefaultColumns($columns), 'route' => $this->context->route]); ?>
 
 <?php
 $columnData = $columns;
@@ -55,19 +56,22 @@ array_push($columnData, [
 	'class' => 'app\components\grid\ActionColumn',
 	'header' => Yii::t('app', 'Option'),
 	'urlCreator' => function($action, $model, $key, $index) {
-		if($action == 'view')
-			return Url::to(['view', 'id'=>$key]);
-		if($action == 'update')
-			return Url::to(['update', 'id'=>$key]);
-		if($action == 'delete')
-			return Url::to(['delete', 'id'=>$key]);
+        if ($action == 'view') {
+            return Url::to(['view', 'id' => $key]);
+        }
+        if ($action == 'update') {
+            return Url::to(['update', 'id' => $key]);
+        }
+        if ($action == 'delete') {
+            return Url::to(['delete', 'id' => $key]);
+        }
 	},
 	'buttons' => [
 		'view' => function ($url, $model, $key) {
-			return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title'=>Yii::t('app', 'Detail Instrument')]);
+			return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title' => Yii::t('app', 'Detail Instrument')]);
 		},
 		'update' => function ($url, $model, $key) {
-			return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title'=>Yii::t('app', 'Update Instrument')]);
+			return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => Yii::t('app', 'Update Instrument')]);
 		},
 		'delete' => function ($url, $model, $key) {
 			return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [

@@ -60,31 +60,36 @@ class SurveyAssessment extends SurveyAssessmentModel
 	 */
 	public function search($params, $column=null)
 	{
-		if(!($column && is_array($column)))
-			$query = SurveyAssessmentModel::find()->alias('t');
-		else
-			$query = SurveyAssessmentModel::find()->alias('t')->select($column);
+        if (!($column && is_array($column))) {
+            $query = SurveyAssessmentModel::find()->alias('t');
+        } else {
+            $query = SurveyAssessmentModel::find()->alias('t')->select($column);
+        }
 		$query->joinWith([
 			// 'survey.respondent.education survey', 
 			// 'instrument.category instrument', 
 			// 'modified modified'
 		]);
-		if((isset($params['sort']) && in_array($params['sort'], ['surveyRespondentId', '-surveyRespondentId'])) || (isset($params['surveyRespondentId']) && $params['surveyRespondentId'] != ''))
-			$query = $query->joinWith(['survey.respondent.education survey']);
-		if((isset($params['sort']) && in_array($params['sort'], ['instrumentQuestion', '-instrumentQuestion'])) || (isset($params['instrumentQuestion']) && $params['instrumentQuestion'] != ''))
-			$query = $query->joinWith(['instrument instrument']);
-		if((isset($params['sort']) && in_array($params['sort'], ['modifiedDisplayname', '-modifiedDisplayname'])) || (isset($params['modifiedDisplayname']) && $params['modifiedDisplayname'] != ''))
-			$query = $query->joinWith(['modified modified']);
+        if ((isset($params['sort']) && in_array($params['sort'], ['surveyRespondentId', '-surveyRespondentId'])) || (isset($params['surveyRespondentId']) && $params['surveyRespondentId'] != '')) {
+            $query->joinWith(['survey.respondent.education survey']);
+        }
+        if ((isset($params['sort']) && in_array($params['sort'], ['instrumentQuestion', '-instrumentQuestion'])) || (isset($params['instrumentQuestion']) && $params['instrumentQuestion'] != '')) {
+            $query->joinWith(['instrument instrument']);
+        }
+        if ((isset($params['sort']) && in_array($params['sort'], ['modifiedDisplayname', '-modifiedDisplayname'])) || (isset($params['modifiedDisplayname']) && $params['modifiedDisplayname'] != '')) {
+            $query->joinWith(['modified modified']);
+        }
 
-		$query = $query->groupBy(['id']);
+		$query->groupBy(['id']);
 
-		// add conditions that should always apply here
+        // add conditions that should always apply here
 		$dataParams = [
 			'query' => $query,
 		];
-		// disable pagination agar data pada api tampil semua
-		if(isset($params['pagination']) && $params['pagination'] == 0)
-			$dataParams['pagination'] = false;
+        // disable pagination agar data pada api tampil semua
+        if (isset($params['pagination']) && $params['pagination'] == 0) {
+            $dataParams['pagination'] = false;
+        }
 		$dataProvider = new ActiveDataProvider($dataParams);
 
 		$attributes = array_keys($this->getTableSchema()->columns);
@@ -105,15 +110,16 @@ class SurveyAssessment extends SurveyAssessmentModel
 			'defaultOrder' => ['id' => SORT_DESC],
 		]);
 
-		if(Yii::$app->request->get('id'))
-			unset($params['id']);
+        if (Yii::$app->request->get('id')) {
+            unset($params['id']);
+        }
 		$this->load($params);
 
-		if(!$this->validate()) {
-			// uncomment the following line if you do not want to return any records when validation fails
-			// $query->where('0=1');
-			return $dataProvider;
-		}
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
 
 		// grid filtering conditions
 		$query->andFilterWhere([

@@ -33,7 +33,7 @@ use dpadjogja\survey\models\SurveyInstrument;
 
 		<?php $instrument = SurveyInstrument::getInstrument();
 		echo $form->field($model, 'instrument_id')
-			->dropDownList($instrument, ['prompt'=>'']);?>
+			->dropDownList($instrument, ['prompt' => '']);?>
 
 		<?php echo $form->field($model, 'answer');?>
 

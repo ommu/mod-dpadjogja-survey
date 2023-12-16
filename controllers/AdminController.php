@@ -45,9 +45,11 @@ class AdminController extends Controller
 	 */
 	public function init()
 	{
-		parent::init();
-		if(Yii::$app->request->get('id'))
-			$this->subMenu = $this->module->params['survey_submenu'];
+        parent::init();
+
+        if (Yii::$app->request->get('id')) {
+            $this->subMenu = $this->module->params['survey_submenu'];
+        }
 	}
 
 	/**
@@ -55,17 +57,17 @@ class AdminController extends Controller
 	 */
 	public function behaviors()
 	{
-		return [
-			'access' => [
-				'class' => AccessControl::className(),
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'delete' => ['POST'],
-				],
-			],
-		];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
 	}
 
 	/**
@@ -73,7 +75,7 @@ class AdminController extends Controller
 	 */
 	public function actionIndex()
 	{
-		return $this->redirect(['manage']);
+        return $this->redirect(['manage']);
 	}
 
 	/**
@@ -82,23 +84,26 @@ class AdminController extends Controller
 	 */
 	public function actionManage()
 	{
-		$searchModel = new SurveysSearch();
-		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new SurveysSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-		$gridColumn = Yii::$app->request->get('GridColumn', null);
-		$cols = [];
-		if($gridColumn != null && count($gridColumn) > 0) {
-			foreach($gridColumn as $key => $val) {
-				if($gridColumn[$key] == 1)
-					$cols[] = $key;
-			}
-		}
-		$columns = $searchModel->getGridColumn($cols);
+        $gridColumn = Yii::$app->request->get('GridColumn', null);
+        $cols = [];
+        if ($gridColumn != null && count($gridColumn) > 0) {
+            foreach ($gridColumn as $key => $val) {
+                if ($gridColumn[$key] == 1) {
+                    $cols[] = $key;
+                }
+            }
+        }
+        $columns = $searchModel->getGridColumn($cols);
 
-		if(($service = Yii::$app->request->get('service')) != null)
-			$service = \dpadjogja\survey\models\SurveyService::findOne($service);
-		if(($respondent = Yii::$app->request->get('respondent')) != null)
-			$respondent = \dpadjogja\survey\models\SurveyRespondent::findOne($respondent);
+        if (($service = Yii::$app->request->get('service')) != null) {
+            $service = \dpadjogja\survey\models\SurveyService::findOne($service);
+        }
+        if (($respondent = Yii::$app->request->get('respondent')) != null) {
+            $respondent = \dpadjogja\survey\models\SurveyRespondent::findOne($respondent);
+        }
 
 		$this->view->title = Yii::t('app', 'Surveys');
 		$this->view->description = '';
@@ -119,7 +124,7 @@ class AdminController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model = new Surveys();
+        $model = new Surveys();
 		$respondent = new SurveyRespondent();
 
 		$assessments = SurveyInstrument::find()->alias('t')
@@ -129,29 +134,30 @@ class AdminController extends Controller
 			->orderBy('t.order ASC')
 			->all();
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			$respondent->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $respondent->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
 			$isValid = $model->validate();
 			$isValid = $respondent->validate() && $isValid;
 
-			if($isValid) {
+            if ($isValid) {
 				$respondent->save();
 				$model->respondent_id = $respondent->id;
-				if($model->save()) {
+                if ($model->save()) {
 					Yii::$app->session->setFlash('success', Yii::t('app', 'Survey success created.'));
 					return $this->redirect(['manage']);
 				}
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(ArrayHelper::merge(ActiveForm::validate($model), ActiveForm::validate($respondent)));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(ArrayHelper::merge(ActiveForm::validate($model), ActiveForm::validate($respondent)));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Create Survey');
 		$this->view->description = '';
@@ -174,28 +180,29 @@ class AdminController extends Controller
 		$model = $this->findModel($id);
 		$respondent = SurveyRespondent::findOne($model->respondent_id);
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			$respondent->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $respondent->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
 			$isValid = $model->validate();
 			$isValid = $respondent->validate() && $isValid;
 
-			if($isValid) {
-				if($model->save() && $respondent->save()) {
+            if ($isValid) {
+                if ($model->save() && $respondent->save()) {
 					Yii::$app->session->setFlash('success', Yii::t('app', 'Survey success updated.'));
-					return $this->redirect(['update', 'id'=>$model->id]);
+					return $this->redirect(['update', 'id' => $model->id]);
 	
 				}
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Update Survey: {respondent-id}', ['respondent-id' => $model->respondent->education->id]);
 		$this->view->description = '';
@@ -214,13 +221,14 @@ class AdminController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$model = $this->findModel($id);
+        $model = $this->findModel($id);
 
 		$this->view->title = Yii::t('app', 'Detail Survey: {respondent-id}', ['respondent-id' => $model->respondent->education->id]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
 			'model' => $model,
+			'small' => false,
 		]);
 	}
 
@@ -235,7 +243,7 @@ class AdminController extends Controller
 		$model = $this->findModel($id);
 		$model->publish = 2;
 
-		if($model->save(false, ['publish','modified_id'])) {
+        if ($model->save(false, ['publish', 'modified_id'])) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey success deleted.'));
 			return $this->redirect(Yii::$app->request->referrer ?: ['manage']);
 		}
@@ -250,8 +258,9 @@ class AdminController extends Controller
 	 */
 	protected function findModel($id)
 	{
-		if(($model = Surveys::findOne($id)) !== null)
-			return $model;
+        if (($model = Surveys::findOne($id)) !== null) {
+            return $model;
+        }
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
 	}

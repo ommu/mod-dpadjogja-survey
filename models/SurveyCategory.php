@@ -92,20 +92,22 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public function getInstruments($count=false, $publish=1)
 	{
-		if($count == false)
-			return $this->hasMany(SurveyInstrument::className(), ['cat_id' => 'id'])
-			->alias('instruments')
-			->andOnCondition([sprintf('%s.publish', 'instruments') => $publish]);
+        if ($count == false) {
+            return $this->hasMany(SurveyInstrument::className(), ['cat_id' => 'id'])
+                ->alias('instruments')
+                ->andOnCondition([sprintf('%s.publish', 'instruments') => $publish]);
+        }
 
 		$model = SurveyInstrument::find()
-			->alias('t')
-			->where(['cat_id' => $this->id]);
-		if($publish == 0)
-			$model->unpublish();
-		elseif($publish == 1)
-			$model->published();
-		elseif($publish == 2)
-			$model->deleted();
+            ->alias('t')
+            ->where(['cat_id' => $this->id]);
+        if ($publish == 0) {
+            $model->unpublish();
+        } else if ($publish == 1) {
+            $model->published();
+        } else if ($publish == 2) {
+            $model->deleted();
+        }
 		$instruments = $model->count();
 
 		return $instruments ? $instruments : 0;
@@ -141,18 +143,20 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public function init()
 	{
-		parent::init();
+        parent::init();
 
-		if(!(Yii::$app instanceof \app\components\Application))
-			return;
+        if (!(Yii::$app instanceof \app\components\Application)) {
+            return;
+        }
 
-		if(!$this->hasMethod('search'))
-			return;
+        if (!$this->hasMethod('search')) {
+            return;
+        }
 
 		$this->templateColumns['_no'] = [
 			'header' => '#',
 			'class' => 'app\components\grid\SerialColumn',
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['category_name'] = [
 			'attribute' => 'category_name',
@@ -207,20 +211,20 @@ class SurveyCategory extends \app\components\ActiveRecord
 			'attribute' => 'instruments',
 			'value' => function($model, $key, $index, $column) {
 				$instruments = $model->getInstruments(true);
-				return Html::a($instruments, ['setting/instrument/manage', 'category'=>$model->primaryKey, 'publish'=>1], ['title'=>Yii::t('app', '{count} instruments', ['count'=>$instruments]), 'data-pjax'=>0]);
+				return Html::a($instruments, ['setting/instrument/manage', 'category' => $model->primaryKey, 'publish' => 1], ['title' => Yii::t('app', '{count} instruments', ['count' => $instruments]), 'data-pjax' => 0]);
 			},
 			'filter' => false,
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 		];
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
 			'value' => function($model, $key, $index, $column) {
-				$url = Url::to(['publish', 'id'=>$model->primaryKey]);
+				$url = Url::to(['publish', 'id' => $model->primaryKey]);
 				return $this->quickAction($url, $model->publish);
 			},
 			'filter' => $this->filterYesNo(),
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 			'visible' => !Yii::$app->request->get('trash') ? true : false,
 		];
@@ -231,35 +235,38 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public static function getInfo($id, $column=null)
 	{
-		if($column != null) {
-			$model = self::find();
-			if(is_array($column))
-				$model->select($column);
-			else
-				$model->select([$column]);
-			$model = $model->where(['id' => $id])->one();
-			return is_array($column) ? $model : $model->$column;
-			
-		} else {
-			$model = self::findOne($id);
-			return $model;
-		}
+        if ($column != null) {
+            $model = self::find();
+            if (is_array($column)) {
+                $model->select($column);
+            } else {
+                $model->select([$column]);
+            }
+            $model = $model->where(['id' => $id])->one();
+            return is_array($column) ? $model : $model->$column;
+
+        } else {
+            $model = self::findOne($id);
+            return $model;
+        }
 	}
 
 	/**
 	 * function getCategory
 	 */
-	public static function getCategory($publish=null, $array=true) 
+	public static function getCategory($publish=null, $array=true)
 	{
 		$model = self::find()->alias('t')
 			->select(['t.id', 't.category_name']);
-		if($publish != null)
-			$model->andWhere(['t.publish' => $publish]);
+        if ($publish != null) {
+            $model->andWhere(['t.publish' => $publish]);
+        }
 
 		$model = $model->orderBy('t.category_name ASC')->all();
 
-		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'category_name');
+        if ($array == true) {
+            return \yii\helpers\ArrayHelper::map($model, 'id', 'category_name');
+        }
 
 		return $model;
 	}
@@ -280,15 +287,17 @@ class SurveyCategory extends \app\components\ActiveRecord
 	 */
 	public function beforeValidate()
 	{
-		if(parent::beforeValidate()) {
-			if($this->isNewRecord) {
-				if($this->creation_id == null)
-					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			} else {
-				if($this->modified_id == null)
-					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			}
-		}
-		return true;
+        if (parent::beforeValidate()) {
+            if ($this->isNewRecord) {
+                if ($this->creation_id == null) {
+                    $this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            } else {
+                if ($this->modified_id == null) {
+                    $this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            }
+        }
+        return true;
 	}
 }

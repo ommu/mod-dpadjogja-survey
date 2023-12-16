@@ -141,18 +141,20 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	 */
 	public function init()
 	{
-		parent::init();
+        parent::init();
 
-		if(!(Yii::$app instanceof \app\components\Application))
-			return;
+        if (!(Yii::$app instanceof \app\components\Application)) {
+            return;
+        }
 
-		if(!$this->hasMethod('search'))
-			return;
+        if (!$this->hasMethod('search')) {
+            return;
+        }
 
 		$this->templateColumns['_no'] = [
 			'header' => '#',
 			'class' => 'app\components\grid\SerialColumn',
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['cat_id'] = [
 			'attribute' => 'cat_id',
@@ -182,7 +184,7 @@ class SurveyInstrument extends \app\components\ActiveRecord
 			'value' => function($model, $key, $index, $column) {
 				return $model->order;
 			},
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['creation_date'] = [
 			'attribute' => 'creation_date',
@@ -224,11 +226,11 @@ class SurveyInstrument extends \app\components\ActiveRecord
 		$this->templateColumns['publish'] = [
 			'attribute' => 'publish',
 			'value' => function($model, $key, $index, $column) {
-				$url = Url::to(['publish', 'id'=>$model->primaryKey]);
+				$url = Url::to(['publish', 'id' => $model->primaryKey]);
 				return $this->quickAction($url, $model->publish);
 			},
 			'filter' => $this->filterYesNo(),
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 			'format' => 'raw',
 			'visible' => !Yii::$app->request->get('trash') ? true : false,
 		];
@@ -239,35 +241,38 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	 */
 	public static function getInfo($id, $column=null)
 	{
-		if($column != null) {
-			$model = self::find();
-			if(is_array($column))
-				$model->select($column);
-			else
-				$model->select([$column]);
-			$model = $model->where(['id' => $id])->one();
-			return is_array($column) ? $model : $model->$column;
-			
-		} else {
-			$model = self::findOne($id);
-			return $model;
-		}
+        if ($column != null) {
+            $model = self::find();
+            if (is_array($column)) {
+                $model->select($column);
+            } else {
+                $model->select([$column]);
+            }
+            $model = $model->where(['id' => $id])->one();
+            return is_array($column) ? $model : $model->$column;
+
+        } else {
+            $model = self::findOne($id);
+            return $model;
+        }
 	}
 
 	/**
 	 * function getInstrument
 	 */
-	public static function getInstrument($publish=null, $array=true) 
+	public static function getInstrument($publish=null, $array=true)
 	{
 		$model = self::find()->alias('t')
 			->select(['t.id', 't.cat_id']);
-		if($publish != null)
-			$model->andWhere(['t.publish' => $publish]);
+        if ($publish != null) {
+            $model->andWhere(['t.publish' => $publish]);
+        }
 
 		$model = $model->orderBy('t.cat_id ASC')->all();
 
-		if($array == true)
-			return \yii\helpers\ArrayHelper::map($model, 'id', 'cat_id');
+        if ($array == true) {
+            return \yii\helpers\ArrayHelper::map($model, 'id', 'cat_id');
+        }
 
 		return $model;
 	}
@@ -295,12 +300,14 @@ class SurveyInstrument extends \app\components\ActiveRecord
 		$answer = $this->answer;
 		$return = true;
 
-		if(!is_array($answer))
-			return false;
+        if (!is_array($answer)) {
+            return false;
+        }
 
 		foreach ($answer as $key => $item) {
-			if(!$item['key'] || !$item['val'])
-				$return = false;
+            if (!$item['key'] || !$item['val']) {
+                $return = false;
+            }
 		}
 
 		return $return;
@@ -326,15 +333,16 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	 */
 	public static function parseAnswer($answer, $sep='li')
 	{
-		if(!is_array($answer) || (is_array($answer) && empty($answer)))
-			return '-';
+        if (!is_array($answer) || (is_array($answer) && empty($answer))) {
+            return '-';
+        }
 
 		// $answer = ArrayHelper::map($answer, 'key', 'val');
 
-		if($sep == 'li') {
+        if ($sep == 'li') {
 			return Html::ul($answer, ['item' => function($item, $index) {
 				return Html::tag('li', $item['key'].'. '.$item['val']);
-			}, 'class'=>'list-unstyled']);
+			}, 'class' => 'list-unstyled']);
 		}
 
 		return implode($sep, $answer);
@@ -358,19 +366,22 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	 */
 	public function beforeValidate()
 	{
-		if(parent::beforeValidate()) {
-			if($this->isNewRecord) {
-				if($this->creation_id == null)
-					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			} else {
-				if($this->modified_id == null)
-					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			}
+        if (parent::beforeValidate()) {
+            if ($this->isNewRecord) {
+                if ($this->creation_id == null) {
+                    $this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            } else {
+                if ($this->modified_id == null) {
+                    $this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            }
 
-			if($this->getAnswerStatus() == false)
-				$this->addError('answer', Yii::t('app', '{attribute} cannot be blank.', ['attribute'=>$this->getAttributeLabel('answer')]));
-		}
-		return true;
+            if ($this->getAnswerStatus() == false) {
+                $this->addError('answer', Yii::t('app', '{attribute} cannot be blank.', ['attribute' => $this->getAttributeLabel('answer')]));
+            }
+        }
+        return true;
 	}
 
 	/**
@@ -378,9 +389,9 @@ class SurveyInstrument extends \app\components\ActiveRecord
 	 */
 	public function beforeSave($insert)
 	{
-		if(parent::beforeSave($insert)) {
+        if (parent::beforeSave($insert)) {
 			$this->answer = Json::encode($this->answer);
-		}
-		return true;
+        }
+        return true;
 	}
 }

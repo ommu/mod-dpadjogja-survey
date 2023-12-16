@@ -42,9 +42,11 @@ class InstrumentController extends Controller
 	 */
 	public function init()
 	{
-		parent::init();
-		if(Yii::$app->request->get('id') || Yii::$app->request->get('category'))
-			$this->subMenu = $this->module->params['setting_submenu'];
+        parent::init();
+
+        if (Yii::$app->request->get('id') || Yii::$app->request->get('category')) {
+            $this->subMenu = $this->module->params['setting_submenu'];
+        }
 	}
 
 	/**
@@ -52,18 +54,18 @@ class InstrumentController extends Controller
 	 */
 	public function behaviors()
 	{
-		return [
-			'access' => [
-				'class' => AccessControl::className(),
-			],
-			'verbs' => [
-				'class' => VerbFilter::className(),
-				'actions' => [
-					'delete' => ['POST'],
-					'publish' => ['POST'],
-				],
-			],
-		];
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                    'publish' => ['POST'],
+                ],
+            ],
+        ];
 	}
 
 	/**
@@ -71,7 +73,7 @@ class InstrumentController extends Controller
 	 */
 	public function actionIndex()
 	{
-		return $this->redirect(['manage']);
+        return $this->redirect(['manage']);
 	}
 
 	/**
@@ -80,25 +82,28 @@ class InstrumentController extends Controller
 	 */
 	public function actionManage()
 	{
-		$searchModel = new SurveyInstrumentSearch();
-		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $searchModel = new SurveyInstrumentSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-		$gridColumn = Yii::$app->request->get('GridColumn', null);
-		$cols = [];
-		if($gridColumn != null && count($gridColumn) > 0) {
-			foreach($gridColumn as $key => $val) {
-				if($gridColumn[$key] == 1)
-					$cols[] = $key;
-			}
-		}
-		$columns = $searchModel->getGridColumn($cols);
+        $gridColumn = Yii::$app->request->get('GridColumn', null);
+        $cols = [];
+        if ($gridColumn != null && count($gridColumn) > 0) {
+            foreach ($gridColumn as $key => $val) {
+                if ($gridColumn[$key] == 1) {
+                    $cols[] = $key;
+                }
+            }
+        }
+        $columns = $searchModel->getGridColumn($cols);
 
-		if(($category = Yii::$app->request->get('category')) != null)
-			$category = \dpadjogja\survey\models\SurveyCategory::findOne($category);
+        if (($category = Yii::$app->request->get('category')) != null) {
+            $category = \dpadjogja\survey\models\SurveyCategory::findOne($category);
+        }
 
 		$this->view->title = Yii::t('app', 'Instruments');
-		if($category)
-			$this->view->title = Yii::t('app', 'Instruments: Category {category-name}', ['category-name'=>$category->category_name]);
+        if ($category) {
+            $this->view->title = Yii::t('app', 'Instruments: Category {category-name}', ['category-name' => $category->category_name]);
+        }
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->render('admin_manage', [
@@ -116,35 +121,40 @@ class InstrumentController extends Controller
 	 */
 	public function actionCreate()
 	{
-		if(($category = Yii::$app->request->get('category')) == null)
-			throw new \yii\web\ForbiddenHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if (($category = Yii::$app->request->get('category')) == null) {
+            throw new \yii\web\ForbiddenHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
 
 		$model = new SurveyInstrument();
-		if($category)
-			$model->cat_id = $category;
+        if ($category) {
+            $model->cat_id = $category;
+        }
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success created.'));
-				if($category)
-					return $this->redirect(['manage', 'category'=>$model->cat_id]);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
-				//return $this->redirect(['view', 'id'=>$model->id]);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success created.'));
+                if ($category) {
+                    return $this->redirect(['manage', 'category' => $model->cat_id]);
+                }
+                return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category' => $model->cat_id]);
+                //return $this->redirect(['view', 'id' => $model->id]);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Create Instrument');
-		if($category)
-			$this->view->title = Yii::t('app', 'Create Instrument: Category {cat-id}', ['cat-id'=>$model->category->category_name]);
+        if ($category) {
+            $this->view->title = Yii::t('app', 'Create Instrument: Category {cat-id}', ['cat-id' => $model->category->category_name]);
+        }
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->render('admin_create', [
@@ -162,23 +172,25 @@ class InstrumentController extends Controller
 	{
 		$model = $this->findModel($id);
 
-		if(Yii::$app->request->isPost) {
-			$model->load(Yii::$app->request->post());
-			// $postData = Yii::$app->request->post();
-			// $model->load($postData);
-			// $model->order = $postData['order'] ? $postData['order'] : 0;
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            // $postData = Yii::$app->request->post();
+            // $model->load($postData);
+            // $model->order = $postData['order'] ? $postData['order'] : 0;
 
-			if($model->save()) {
-				Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success updated.'));
-				if(!Yii::$app->request->isAjax)
-					return $this->redirect(['update', 'id'=>$model->id]);
-				return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success updated.'));
+                if (!Yii::$app->request->isAjax) {
+                    return $this->redirect(['update', 'id' => $model->id]);
+                }
+                return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category' => $model->cat_id]);
 
-			} else {
-				if(Yii::$app->request->isAjax)
-					return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
-			}
-		}
+            } else {
+                if (Yii::$app->request->isAjax) {
+                    return \yii\helpers\Json::encode(\app\components\widgets\ActiveForm::validate($model));
+                }
+            }
+        }
 
 		$this->view->title = Yii::t('app', 'Update Instrument: Category {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
@@ -195,13 +207,14 @@ class InstrumentController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$model = $this->findModel($id);
+        $model = $this->findModel($id);
 
 		$this->view->title = Yii::t('app', 'Detail Instrument: Category {cat-id}', ['cat-id' => $model->category->category_name]);
 		$this->view->description = '';
 		$this->view->keywords = '';
 		return $this->oRender('admin_view', [
 			'model' => $model,
+			'small' => false,
 		]);
 	}
 
@@ -216,9 +229,9 @@ class InstrumentController extends Controller
 		$model = $this->findModel($id);
 		$model->publish = 2;
 
-		if($model->save(false, ['publish','modified_id'])) {
+        if ($model->save(false, ['publish', 'modified_id'])) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success deleted.'));
-			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
+			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category' => $model->cat_id]);
 		}
 	}
 
@@ -234,9 +247,9 @@ class InstrumentController extends Controller
 		$replace = $model->publish == 1 ? 0 : 1;
 		$model->publish = $replace;
 
-		if($model->save(false, ['publish','modified_id'])) {
+        if ($model->save(false, ['publish', 'modified_id'])) {
 			Yii::$app->session->setFlash('success', Yii::t('app', 'Survey instrument success updated.'));
-			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category'=>$model->cat_id]);
+			return $this->redirect(Yii::$app->request->referrer ?: ['manage', 'category' => $model->cat_id]);
 		}
 	}
 
@@ -249,8 +262,9 @@ class InstrumentController extends Controller
 	 */
 	protected function findModel($id)
 	{
-		if(($model = SurveyInstrument::findOne($id)) !== null)
-			return $model;
+        if (($model = SurveyInstrument::findOne($id)) !== null) {
+            return $model;
+        }
 
 		throw new \yii\web\NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
 	}

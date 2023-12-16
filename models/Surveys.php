@@ -152,18 +152,20 @@ class Surveys extends \app\components\ActiveRecord
 	 */
 	public function init()
 	{
-		parent::init();
+        parent::init();
 
-		if(!(Yii::$app instanceof \app\components\Application))
-			return;
+        if (!(Yii::$app instanceof \app\components\Application)) {
+            return;
+        }
 
-		if(!$this->hasMethod('search'))
-			return;
+        if (!$this->hasMethod('search')) {
+            return;
+        }
 
 		$this->templateColumns['_no'] = [
 			'header' => '#',
 			'class' => 'app\components\grid\SerialColumn',
-			'contentOptions' => ['class'=>'text-center'],
+			'contentOptions' => ['class' => 'text-center'],
 		];
 		$this->templateColumns['gender'] = [
 			'attribute' => 'gender',
@@ -243,19 +245,20 @@ class Surveys extends \app\components\ActiveRecord
 	 */
 	public static function getInfo($id, $column=null)
 	{
-		if($column != null) {
-			$model = self::find();
-			if(is_array($column))
-				$model->select($column);
-			else
-				$model->select([$column]);
-			$model = $model->where(['id' => $id])->one();
-			return is_array($column) ? $model : $model->$column;
-			
-		} else {
-			$model = self::findOne($id);
-			return $model;
-		}
+        if ($column != null) {
+            $model = self::find();
+            if (is_array($column)) {
+                $model->select($column);
+            } else {
+                $model->select([$column]);
+            }
+            $model = $model->where(['id' => $id])->one();
+            return is_array($column) ? $model : $model->$column;
+
+        } else {
+            $model = self::findOne($id);
+            return $model;
+        }
 	}
 
 	/**
@@ -266,12 +269,14 @@ class Surveys extends \app\components\ActiveRecord
 		$assessments = $this->assessments;
 		$return = true;
 
-		if(!is_array($assessments))
-			return false;
+        if (!is_array($assessments)) {
+            return false;
+        }
 
 		foreach ($assessments as $key => $item) {
-			if(!$item)
-				$return = false;
+            if (!$item) {
+                $return = false;
+            }
 		}
 
 		return $return;
@@ -297,19 +302,22 @@ class Surveys extends \app\components\ActiveRecord
 	 */
 	public function beforeValidate()
 	{
-		if(parent::beforeValidate()) {
-			if($this->isNewRecord) {
-				if($this->creation_id == null)
-					$this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			} else {
-				if($this->modified_id == null)
-					$this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
-			}
+        if (parent::beforeValidate()) {
+            if ($this->isNewRecord) {
+                if ($this->creation_id == null) {
+                    $this->creation_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            } else {
+                if ($this->modified_id == null) {
+                    $this->modified_id = !Yii::$app->user->isGuest ? Yii::$app->user->id : null;
+                }
+            }
 
-			if($this->getAssessmentStatus() == false)
-				$this->addError('assessments', Yii::t('app', '{attribute} not complete.', ['attribute'=>$this->getAttributeLabel('assessments')]));
-		}
-		return true;
+            if ($this->getAssessmentStatus() == false) {
+                $this->addError('assessments', Yii::t('app', '{attribute} not complete.', ['attribute' => $this->getAttributeLabel('assessments')]));
+            }
+        }
+        return true;
 	}
 
 	/**
@@ -317,9 +325,9 @@ class Surveys extends \app\components\ActiveRecord
 	 */
 	public function afterSave($insert, $changedAttributes)
 	{
-		parent::afterSave($insert, $changedAttributes);
-		
-		if($insert) {
+        parent::afterSave($insert, $changedAttributes);
+
+        if ($insert) {
 			foreach ($this->assessments as $key => $val) {
 				$model = new SurveyAssessment();
 				$model->survey_id = $this->id;
